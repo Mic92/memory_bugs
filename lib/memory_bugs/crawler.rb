@@ -1,8 +1,12 @@
 require 'set'
-require 'memory_bugs/logging'
 require 'net/https'
 require 'net/http'
 require 'typhoeus'
+require 'time'
+
+require 'memory_bugs/logging'
+require 'memory_bugs/models'
+require 'memory_bugs/elasticsearch'
 
 module MemoryBugs
   class Crawler
@@ -20,8 +24,7 @@ module MemoryBugs
     attr_reader :ticket_queues
 
     def site_name(site)
-      match = /::(?<name>[^:]+)$/.match(site.name)
-      match[:name].downcase
+      site.name.split("::").last.downcase
     end
 
     def find_tickets
@@ -50,6 +53,11 @@ module MemoryBugs
       url = resp.effective_url
       if resp.success?
         MemoryBugs::Logger.info("Got page: '#{url}'")
+
+        page = Models::TicketPage.new(content: resp.body,
+                              created_at: Time.now.utc.iso8601,
+                              url: url.to_s)
+        MemoryBugs::Elasticsearch.create(page)
       elsif resp.timed_out?
         MemoryBugs::Logger.info("Page timed out: '#{url}'")
       elsif resp.code == 0

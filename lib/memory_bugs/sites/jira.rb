@@ -26,7 +26,6 @@ module MemoryBugs
         "#{site}/browse/#{key}"
       end
 
-
       def process(url, content, ticket_queue, &blk)
         tickets = JSON.parse(content)["issues"]
 

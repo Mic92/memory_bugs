@@ -1,17 +1,17 @@
 require 'ostruct'
+require 'yaml'
+require 'hashie'
 
 module MemoryBugs
-  Config = OpenStruct.new
-  def load_config
+  Config = Hashie::Mash.new
+  def self.load_config
     env = ENV["environment"] || "production"
-    root = File.dirname(File.expand_path(__FILE__, "../.."))
+    root = File.expand_path(File.join(File.dirname(__FILE__), "../.."))
 
     config_path = File.join(root, "config.yml")
-    config = YAML.load_file(config_path).deep_symbolize_keys
-    if config[env]
-      config[env].each do |k,v|
-        Config[k] = v
-      end
+    yaml = YAML.load_file(config_path)
+    if yaml
+      Config.deep_merge(yaml)
     end
     Config.env = env
     Config.root = root
