@@ -17,7 +17,7 @@ module MemoryBugs
                   col_sep: "\t",
                   quote_char: "\0",
                   headers: :first_row) do |row|
-          request = MemoryBugs::Request.new(ticket_url(row["#"]))
+          request = Typhoeus::Request.new(ticket_url(row["#"]))
           ticket_queue.push(request)
         end
       end

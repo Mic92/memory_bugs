@@ -22,8 +22,7 @@ module MemoryBugs
         number = issues[0]["number"]
         headers = { "X-GitHub-Media-Type" => "github.v3; param=full; format=json" }
         number.times do |n|
-          request = MemoryBugs::Request.new(ticket_url(n + 1),
-                                            headers: headers)
+          request = Typhoeus::Request.new(ticket_url(n + 1), headers: headers)
           ticket_queue.push(request)
         end
       end

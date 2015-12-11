@@ -13,7 +13,7 @@ module MemoryBugs
 
       def process(url, content, ticket_queue)
         CSV.parse(content, headers: :first_row) do |row|
-          req = MemoryBugs::Request.new(ticket_url(row["ID"]))
+          req = Typhoeus::Request.new(ticket_url(row["ID"]))
           ticket_queue.push(req)
         end
       end

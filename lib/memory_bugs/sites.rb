@@ -1,4 +1,4 @@
-require 'memory_bugs/request'
+require 'typhoeus'
 require 'memory_bugs/pagination'
 
 sites = %w{memcached mysql postgres redis sqlite leveldb mongodb mariadb virtuoso}

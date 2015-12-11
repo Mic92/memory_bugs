@@ -21,7 +21,7 @@ module MemoryBugs
         has_tickets = false
         CSV.parse(content, headers: :first_row) do |row|
           has_tickets = true
-          request = MemoryBugs::Request.new(ticket_url(row["ID"]))
+          request = Typhoeus::Request.new(ticket_url(row["ID"]))
           ticket_queue.push(request)
         end
 

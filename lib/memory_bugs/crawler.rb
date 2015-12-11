@@ -1,9 +1,8 @@
-require 'thread'
 require 'set'
 require 'memory_bugs/logging'
-require 'open-uri'
 require 'net/https'
 require 'net/http'
+require 'typhoeus'
 
 module MemoryBugs
   class Crawler
@@ -14,22 +13,32 @@ module MemoryBugs
     DEFAULT_CRAWLER = Set.new
 
     def initialize(sites: DEFAULT_CRAWLER)
-      @ticket_queue = Queue.new
+      @ticket_queues = {}
       @sites = sites
     end
 
-    attr_reader :ticket_queue
+    attr_reader :ticket_queues
 
-    def index_tickets
+    def site_name(site)
+      match = /::(?<name>[^:]+)$/.match(site.name)
+      match[:name].downcase
+    end
+
+    def find_tickets
       @sites.each do |klass|
         site = klass.new
+        queue = []
+
+        @ticket_queues[site_name(klass)] = queue
         next_urls = [site.seed_url]
         seen = Set.new
         until next_urls.empty?
           url = next_urls.pop
           seen << url
+          # TODO replace with hydra if it is bottle neck
           document = download(url)
-          site.process(url, document, @ticket_queue) do |next_url|
+          site.process(url, document, queue) do |next_url|
+
             next if seen.include?(next_url)
             next_urls << next_url
           end
@@ -37,7 +46,34 @@ module MemoryBugs
       end
     end
 
+    def handle_download(resp)
+      url = resp.effective_url
+      if resp.success?
+        MemoryBugs::Logger.info("Got page: '#{url}'")
+      elsif resp.timed_out?
+        MemoryBugs::Logger.info("Page timed out: '#{url}'")
+      elsif resp.code == 0
+        MemoryBugs::Logger.info("Failed to request: '#{url}'")
+      else
+        MemoryBugs::Logger.info("Got #{resp.code} for request: '#{url}'")
+      end
+    end
+
     def download_tickets
+      hydra = Typhoeus::Hydra.new
+      # schedule requests round robbin per site
+      while @ticket_queues.size > 0
+        @ticket_queues.each do |name, queue|
+          if queue.empty?
+            @ticket_queues.delete(name)
+          else
+            req = queue.pop
+            req.on_complete { |resp| handle_download(resp) }
+            hydra.queue(req)
+          end
+        end
+      end
+      hydra.run
     end
 
     def download(url)

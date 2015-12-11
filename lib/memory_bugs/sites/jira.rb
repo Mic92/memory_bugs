@@ -31,7 +31,7 @@ module MemoryBugs
         tickets = JSON.parse(content)["issues"]
 
         tickets.each do |ticket|
-          request = MemoryBugs::Request.new(ticket_url(ticket["key"]))
+          request = Typhoeus::Request.new(ticket_url(ticket["key"]))
           ticket_queue.push(request)
         end
 
