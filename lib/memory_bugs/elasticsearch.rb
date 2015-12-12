@@ -57,6 +57,39 @@ module MemoryBugs
       def refresh
         Client.indices.refresh
       end
+
+      def bulk(objects)
+        updates = objects.map do |object|
+          {
+            update: {
+              _index: index_name,
+              _type:  object.class.type_name,
+              _id: object.id,
+              data: { doc: object, doc_as_upsert: true }
+            }
+          }
+        end
+        Client.bulk body: updates
+      end
+
+      def scroll(klass)
+        response = Client.search index: index_name,
+          type: klass.type_name,
+          search_type: 'scan',
+          scroll: '1m',
+          size: 1000
+
+        loop do
+          response = Client.scroll(scroll_id: response['_scroll_id'], scroll: '1m')
+          if response['hits']['hits'].empty?
+            break
+          end
+
+          response['hits']['hits'].map do |r|
+            yield klass.new(r['_source'])
+          end
+        end
+      end
     end
   end
 end

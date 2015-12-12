@@ -19,6 +19,7 @@ module MemoryBugs
               _all: { enabled: false },
               created_at: { type: 'date' },
               content: { type: 'string', index: 'no' },
+              site: { type: 'string', index: 'not_analyzed' },
               url: { type: 'string', index: 'not_analyzed' }
             }
           }

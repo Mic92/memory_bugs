@@ -26,26 +26,4 @@ describe MemoryBugs::Crawler do
   test_site(MemoryBugs::Sites::Virtuosu, 506)
   test_site(MemoryBugs::Sites::Memcached, 420)
   # test_site(MemoryBugs::Sites::Firebird, 420)
-
-  describe MemoryBugs::Sites::Sqlite do
-    before do
-      @crawler = MemoryBugs::Crawler.new(sites: [MemoryBugs::Sites::Sqlite])
-      MemoryBugs::Elasticsearch.delete_index
-      MemoryBugs::Elasticsearch.create_mapping
-
-      VCR.use_cassette("typhoeus_queue") do
-        @crawler.find_tickets
-        @site_name = "sqlite"
-        @crawler.ticket_queues[@site_name] = @crawler.ticket_queues[@site_name].take(3)
-        @crawler.download_tickets
-
-        MemoryBugs::Elasticsearch.refresh
-        MemoryBugs::Elasticsearch.count.must_be :==, 3
-      end
-    end
-
-    it "should empty the queue" do
-      @crawler.ticket_queues.must_be_empty
-    end
-  end
 end

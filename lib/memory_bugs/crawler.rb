@@ -49,14 +49,15 @@ module MemoryBugs
       end
     end
 
-    def handle_download(resp)
+    def handle_download(site, resp)
       url = resp.effective_url
       if resp.success?
         MemoryBugs::Logger.info("Got page: '#{url}'")
 
-        page = Models::TicketPage.new(content: resp.body,
-                              created_at: Time.now.utc.iso8601,
-                              url: url.to_s)
+        page = Models::TicketPage.new(site: site,
+                                      content: resp.body,
+                                      created_at: Time.now.utc.iso8601,
+                                      url: url.to_s)
         MemoryBugs::Elasticsearch.create(page)
       elsif resp.timed_out?
         MemoryBugs::Logger.info("Page timed out: '#{url}'")
@@ -76,7 +77,7 @@ module MemoryBugs
             @ticket_queues.delete(name)
           else
             req = queue.pop
-            req.on_complete { |resp| handle_download(resp) }
+            req.on_complete { |resp| handle_download(name, resp) }
             hydra.queue(req)
           end
         end

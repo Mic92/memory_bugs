@@ -1,4 +1,6 @@
-sites = %w{memcached mysql postgres redis sqlite leveldb mongodb mariadb virtuoso}
+require "memory_bugs/scraper"
+
+sites = %w{sqlite}
 sites.each do |site|
-  require "memory_bugs/scraper/#{site}"
+  require "memory_bugs/scrapers/#{site}"
 end
