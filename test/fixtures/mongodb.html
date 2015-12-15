@@ -1,0 +1,1371 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+
+
+
+
+
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<title>[SERVER-21858] A high throughput update workload in a replica set can cause starvation of secondary reads - MongoDB </title>
+<meta name="application-name" content="JIRA" data-name="jira" data-version="6.3.15"><meta name="ajs-hasCriteriaAutoUpdate" content="true">
+<meta name="ajs-viewissue-use-history-api" content="false">
+<meta name="ajs-viewissue-max-cache-size" content="">
+<meta name="ajs-view-issue-trace-key" content="jira.issue.refreshed">
+<meta name="ajs-view-issue-psycho-key" content="jira.psycho.issue.refreshed">
+<meta name="ajs-view-issue-refreshed-cached-key" content="jira.psycho.issue.refreshed.cached">
+<meta name="ajs-return-to-search-trace-key" content="jira.returned.to.search">
+<meta name="ajs-return-to-search-psycho-key" content="jira.psycho.returned.to.search">
+<meta name="ajs-default-avatar-url" content="/secure/useravatar?size=xsmall&amp;avatarId=10123">
+<meta name="ajs-jira.issues.preferred.layout.key" content="split-view">
+<meta name="ajs-max-recent-searchers" content="10">
+<meta name="ajs-jira-base-url" content="https://jira.mongodb.org">
+<meta name="ajs-serverRenderedViewIssue" content="true">
+<meta name="ajs-can-search-users" content="false">
+<meta name="ajs-can-edit-watchers" content="false">
+<meta name="ajs-issue-key" content="SERVER-21858">
+<meta name="ajs-server-view-issue-is-editable" content="false">
+<meta name="ajs-dev-mode" content="false">
+<meta name="ajs-context-path" content="">
+<meta name="ajs-version-number" content="6.3.15">
+<meta name="ajs-build-number" content="6346">
+<meta name="ajs-is-beta" content="false">
+<meta name="ajs-is-rc" content="false">
+<meta name="ajs-is-snapshot" content="false">
+<meta name="ajs-is-milestone" content="false">
+<meta name="ajs-remote-user" content="">
+<meta name="ajs-remote-user-fullname" content="">
+<meta name="ajs-user-locale" content="en_US">
+<meta name="ajs-user-locale-group-separator" content=",">
+<meta name="ajs-app-title" content="MongoDB ">
+<meta name="ajs-keyboard-shortcuts-enabled" content="true">
+<meta name="ajs-keyboard-accesskey-modifier" content="Alt">
+<meta name="ajs-enabled-dark-features" content="[&quot;jira.plugin.devstatus.phasetwo.enabled&quot;,&quot;com.atlassian.jira.config.PDL&quot;,&quot;jira.frother.reporter.field&quot;,&quot;jira.plugin.devstatus.phasetwo&quot;,&quot;com.atlassian.jira.darkfeature.CommonHeader&quot;,&quot;app-switcher.new&quot;,&quot;frother.assignee.field&quot;,&quot;jira.issue.status.lozenge&quot;]">
+<meta name="ajs-date-relativize" content="false">
+<meta name="ajs-date-time" content="hh:mm a z">
+<meta name="ajs-date-day" content="EEEE hh:mm a z">
+<meta name="ajs-date-dmy" content="dd/MMM/yy">
+<meta name="ajs-date-complete" content="MMM dd yyyy hh:mm:ss a z">
+<meta name="ajs-in-admin-mode" content="false">
+<meta name="ajs-is-sysadmin" content="false">
+<meta name="ajs-is-admin" content="false">
+<meta name="ajs-outgoing-mail-enabled" content="true">
+<meta name="ajs-whats-new-iframe-src" content="https://docs.atlassian.com/jira/docs-063/whatsnew/iframe"> <meta name="ajs-whatsnew-full-link" content="https://docs.atlassian.com/jira/docs-063/whatsnew/full">
+
+
+    
+<meta id="atlassian-token" name="atlassian-token" content="ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout">
+
+
+
+<link rel="shortcut icon" href="/s/en_US207nf7/6346/109/_/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="/osd.jsp" title="[SERVER-21858] A high throughput update workload in a replica set can cause starvation of secondary reads - MongoDB "/>
+
+    
+
+
+<!--[if IE]><![endif]-->
+<script type="text/javascript">var contextPath = '';</script>
+<script>
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};
+WRM._unparsedData["com.atlassian.jira.ext.calendar:tipDataProvider.tip"]="{\"suppressTip\":false}";
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\"\"";
+WRM._unparsedData["com.atlassian.plugins.jira-html5-attach-images:jira-html5-attach-images-resources.resource-uris"]="{\"deployJava.html\":\"/s/en_US207nf7/6346/109/1.5.20/_/download/resources/com.atlassian.plugins.jira-html5-attach-images:jira-html5-attach-images-resources/deployJava.html\",\"clipboard.jar\":\"/s/en_US207nf7/6346/109/1.5.20/_/download/resources/com.atlassian.plugins.jira-html5-attach-images:jira-html5-attach-images-resources/clipboard.jar\",\"clipboard-legacy.jar\":\"/s/en_US207nf7/6346/109/1.5.20/_/download/resources/com.atlassian.plugins.jira-html5-attach-images:jira-html5-attach-images-resources/clipboard-legacy.jar\"}";
+WRM._unparsedData["com.atlassian.servicedesk:sd-feature-flags.sd-feature-flag-data"]="{\"enabled-feature-keys\":[\"jira.plugin.devstatus.phasetwo.enabled\",\"com.atlassian.jira.config.PDL\",\"jira.frother.reporter.field\",\"jira.plugin.devstatus.phasetwo\",\"com.atlassian.jira.darkfeature.CommonHeader\",\"app-switcher.new\",\"frother.assignee.field\",\"jira.issue.status.lozenge\"],\"sd-feature-flag-states\":{\"sd.agent.signature\":false,\"sd.req.participants.portal\":true,\"sd.test.feature.flag.x\":true,\"sd.confluence.kb.od.oneclick\":true,\"sd.sla.threshold.events\":false,\"sd.admin.permission.migration.complete\":false,\"sd.automation.settings.page\":false,\"sd.shared.portals.kb.like\":true,\"sd.email.platform.integration\":true,\"sd.shared.portals.redo\":true,\"sd.req.participants.email\":true,\"sd.portal.logo.default\":true,\"sd.request.participants.upgrade\":true,\"sd.agent.invite.customers\":true,\"sd.shared.portals.kb.search\":true,\"sd.email.notification.plain.text\":true,\"sd.jira.automation.event\":false,\"sd.experimental.customer.satisfaction\":false,\"com.atlassian.jira.config.CoreFeatures.LICENSE_ROLES_ENABLED\":false,\"sd.experimental.itil.sd.configuration\":false,\"sd.request.participants\":true,\"sd.test.feature.flag.y\":false,\"sd.better.logo.uploader\":true}}";
+WRM._unparsedData["com.atlassian.servicedesk:sd-help-links.help-links"]="{\"troubleshoot.requesttype\":\"http://docs.atlassian.com/servicedesk/docs-023/Troubleshooting+issues+with+request+types\",\"public.signup\":\"http://docs.atlassian.com/servicedesk/docs-023/Configuring+public+signup\",\"troubleshooting.user.management.issues\":\"http://docs.atlassian.com/servicedesk/docs-023/Troubleshooting+issues+with+user+management\",\"admin.notifications.config\":\"http://docs.atlassian.com/servicedesk/docs-023/Configuring+JIRA+Service+Desk+notifications\",\"resolve.permission.scheme.errors\":\"http://docs.atlassian.com/servicedesk/docs-023/Resolving+permission+scheme+errors\",\"default\":\"http://docs.atlassian.com/servicedesk/docs-023/\",\"request.type.error.learn.more\":\"http://docs.atlassian.com/servicedesk/docs-023/Troubleshooting+issues+with+request+types\",\"email.setup\":\"http://docs.atlassian.com/servicedesk/docs-023/Setting+up+the+email+channel\"}";
+WRM._unparsedData["com.atlassian.servicedesk:sd-license-warning-resource.exceeded-data"]="{\"isOndemand\":false,\"isMaxTier\":true}";
+</script>
+<link type="text/css" rel="stylesheet" href="/s/2723d092b63885e0d7c260cc007e8b9d-CDN/en_US207nf7/6346/109/41/_/download/superbatch/css/batch.css" media="all">
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_US207nf7/6346/109/41/_/download/superbatch/css/batch.css?conditionalComment=lte+IE+9" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/s/2723d092b63885e0d7c260cc007e8b9d-CDN/en_US207nf7/6346/109/27c4da0b69de2f93d45f315dfb65a65a/_/download/contextbatch/css/jira.navigator.simple,jira.navigator.advanced,jira.view.issue,atl.general,jira.navigator.kickass,jira.global,jira.general/batch.css" media="all">
+<script type="text/javascript" src="/s/b81232aa07b517d2448443fbb52f7a9f-CDN/en_US207nf7/6346/109/41/_/download/superbatch/js/batch.js?locale=en-US" ></script>
+<script type="text/javascript" src="/s/756f161458735e15c8d9bf5633ab2250-T/en_US207nf7/6346/109/27c4da0b69de2f93d45f315dfb65a65a/_/download/contextbatch/js/jira.navigator.simple,jira.navigator.advanced,jira.view.issue,atl.general,jira.navigator.kickass,jira.global,jira.general/batch.js?locale=en-US" ></script>
+<script type="text/javascript" src="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_US207nf7/6346/109/1.0/_/download/batch/jira.webresources:calendar-en/jira.webresources:calendar-en.js" ></script>
+<script type="text/javascript" src="/s/d41d8cd98f00b204e9800998ecf8427e-T/en_US207nf7/6346/109/4.0.2/_/download/batch/net.youngaweb.jira.issue-type-ui-filter:issue-type-ui-filter-resources/net.youngaweb.jira.issue-type-ui-filter:issue-type-ui-filter-resources.js" ></script>
+<script type="text/javascript" src="/s/ac418749741d61b0a1711f05130fc9e1-T/en_US207nf7/6346/109/1.5/_/download/batch/com.atlassian.administration.atlassian-admin-quicksearch-jira:admin-quicksearch-webresources/com.atlassian.administration.atlassian-admin-quicksearch-jira:admin-quicksearch-webresources.js?locale=en-US" ></script>
+
+<script type="text/javascript" src="/rest/api/1.0/shortcuts/6346/c1db4ceaafe7a8840eb653571a486079/shortcuts.js?context=issuenavigation&amp;context=issueaction"></script>
+
+
+    
+    
+    
+    <meta name="decorator" content="atl.general">
+    <meta id="isNavigator" name="isNavigator" content="true">
+    <meta name="ajs-is-inline-edit-enabled" content="true">
+    <meta name="ajs-user.search.mode" content="basic">
+    <meta name="ajs-issue-search-help-title" content="Searching for Issues">
+    <meta name="ajs-issue-search-help-url" content="https://docs.atlassian.com/jira/docs-063/Searching+for+Issues">
+    <meta name="ajs-advanced-search-help-title" content="Performing Advanced Searches">
+    <meta name="ajs-advanced-search-help-url" content="https://docs.atlassian.com/jira/docs-063/Advanced+Searching">
+    
+</head>
+<body id="jira" class="aui-layout aui-theme-default ka ajax-issue-search-and-view page-type-navigator navigator-issue-only" data-version="6.3.15">
+<div id="page">
+    <header id="header" role="banner">
+        
+    
+        
+            
+        
+    
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+        
+
+
+<nav class="aui-header aui-dropdown2-trigger-group" role="navigation"><div class="aui-header-inner"><div class="aui-header-primary"><h1 id="logo" class="aui-header-logo aui-header-logo-custom"><a href="https://jira.mongodb.org/secure/MyJiraHome.jspa"><img src="/s/en_US207nf7/6346/109/_/jira-logo-scaled.png" alt="MongoDB " /></a></h1><ul class='aui-nav'>
+
+
+
+
+<li><a class="aui-nav-link aui-dropdown2-ajax jira-ajax-menu aui-dropdown2-trigger "href="/secure/Dashboard.jspa" id="home_link"  accessKey="d"  title="View and manage your dashboards"  aria-haspopup="true" aria-owns="home_link-content">Dashboards</a><div id="home_link-content" class="aui-dropdown2 aui-style-default" data-aui-dropdown2-ajax-key="home_link"></div></li><li><a class="aui-nav-link aui-dropdown2-ajax jira-ajax-menu aui-dropdown2-trigger "href="/browse/SERVER" id="browse_link"  accessKey="p"  title="View recent projects and browse a list of projects"  aria-haspopup="true" aria-owns="browse_link-content">Projects</a><div id="browse_link-content" class="aui-dropdown2 aui-style-default" data-aui-dropdown2-ajax-key="browse_link"></div></li><li><a class="aui-nav-link aui-dropdown2-ajax jira-ajax-menu aui-dropdown2-trigger "href="/issues/" id="find_link"  accessKey="i"  title="Search for issues and view recent issues"  aria-haspopup="true" aria-owns="find_link-content">Issues</a><div id="find_link-content" class="aui-dropdown2 aui-style-default" data-aui-dropdown2-ajax-key="find_link"></div></li><li><a class="aui-nav-link aui-dropdown2-ajax jira-ajax-menu aui-dropdown2-trigger "href="/secure/GreenHopper.jspa" id="greenhopper_menu"  title="Manage your project with JIRA Agile"  aria-haspopup="true" aria-owns="greenhopper_menu-content">Agile</a><div id="greenhopper_menu-content" class="aui-dropdown2 aui-style-default" data-aui-dropdown2-ajax-key="greenhopper_menu"></div></li>
+</ul></div><div class="aui-header-secondary"><ul class='aui-nav'><li>
+    <form action="/secure/QuickSearch.jspa" method="post" id="quicksearch" class="aui-quicksearch dont-default-focus ajs-dirty-warning-exempt">
+        <input id="quickSearchInput" class="search" type="text" title="Search" placeholder="Search" name="searchString" accessKey="q" />
+        <input type="submit" class="hidden" value="Search">
+    </form>
+</li>
+
+
+
+    <li id="system-help-menu">
+        <a class="aui-nav-link aui-dropdown2-trigger" id="help_menu" aria-haspopup="true" aria-owns="system-help-menu-content" href="https://docs.atlassian.com/jira/docs-063/JIRA+Documentation"  target="$textUtils.htmlEncode($rootHelpMenuItem.params.target)"  title="Help"><span class="aui-icon aui-icon-small aui-iconfont-help">Help</span></a>
+        <div id="system-help-menu-content" class="aui-dropdown2 aui-style-default">
+                            <div class="aui-dropdown2-section">
+                                                                <ul id="jira-help" class="aui-list-truncate">
+                                                            <li>
+                                    <a  id="view_help"   class=""  title="Goto the online documentation for JIRA" href="https://docs.atlassian.com/jira/docs-063/JIRA+Documentation"  target="_blank" >Online Help</a>
+                                </li>
+                                                            <li>
+                                    <a  id="gh_view_help"   class=""  title="Get help online for JIRA Agile" href="http://docs.atlassian.com/agile/docs-066/JIRA+Agile+Documentation"  target="_blank" >JIRA Agile Help</a>
+                                </li>
+                                                            <li>
+                                    <a  id="gh_view_agile_answers"   class=""  title="Get answers about Agile" href="http://answers.atlassian.com/tags/agile/"  target="_blank" >Agile Answers</a>
+                                </li>
+                                                            <li>
+                                    <a  id="service-desk-view-help"   class=""  title="Get help online for JIRA Service Desk" href="http://docs.atlassian.com/servicedesk/docs-023/"  target="_blank" >JIRA Service Desk Help</a>
+                                </li>
+                                                            <li>
+                                    <a  id="keyshortscuthelp"   class=""  title="Get more information about JIRA's Keyboard Shortcuts" href="/secure/ViewKeyboardShortcuts!default.jspa"  target="_blank" >Keyboard Shortcuts</a>
+                                </li>
+                                                            <li>
+                                    <a  id="view_about"   class=""  title="Get more information about JIRA" href="/secure/AboutPage.jspa" >About JIRA</a>
+                                </li>
+                                                            <li>
+                                    <a  id="view_credits"   class=""  title="See who did what" href="/secure/JiraCreditsPage!default.jspa"  target="_blank" >JIRA Credits</a>
+                                </li>
+                                                            <li>
+                                    <a  id="whats-new-menu-link"   class=""   href="https://docs.atlassian.com/jira/docs-063/whatsnew/full" >What’s New</a>
+                                </li>
+                                                    </ul>
+                                    </div>
+                    </div>
+    </li>
+
+
+
+
+
+
+
+
+
+<li id="user-options">
+            <a class="aui-nav-link login-link" href="/login.jsp?os_destination=%2Fbrowse%2FSERVER-21858">Log In</a>
+                <div id="user-options-content" class="aui-dropdown2 aui-style-default">
+                            <div class="aui-dropdown2-section">
+                                                        </div>
+                    </div>
+    </li>
+</ul></div></div><!-- .aui-header-inner--></nav><!-- .aui-header -->
+    </header>
+    
+
+
+
+    <section id="content" role="main">
+        
+    <div class="navigator-container hidden">
+                                                                                                                                <div class="hidden shortcut-links">
+                                    <a id="edit-issue" class="issueaction-edit-issue" href="/secure/EditIssue!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="assign-issue" class="issueaction-assign-issue" href="/secure/AssignIssue!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="assign-to-me" class="issueaction-assign-to-me hide-from-opsbar" href="/secure/AssignIssue.jspa?atl_token=ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout&amp;id={0}&amp;&returnUrl=/secure/issues"></a>
+                                    <a id="comment-issue" class="issueaction-comment-issue add-issue-comment" href="/secure/AddComment!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="greenhopper-rapidboard-operation" class="issueaction-greenhopper-rapidboard-operation js-rapidboard-operation-issue" href="/secure/GHGoToBoard.jspa?issueId={0}&returnUrl=/secure/issues"></a>
+                                    <a id="greenhopper-rank-top-operation" class="issueaction-greenhopper-rank-top-operation" href="/secure/RankTop.jspa?issueId={0}&returnUrl=/secure/issues"></a>
+                                    <a id="greenhopper-rank-bottom-operation" class="issueaction-greenhopper-rank-bottom-operation" href="/secure/RankBottom.jspa?issueId={0}&returnUrl=/secure/issues"></a>
+                                    <a id="log-work" class="issueaction-log-work" href="/secure/CreateWorklog!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="attach-file" class="issueaction-attach-file" href="/secure/AttachFile!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="attach-screenshot-html5" class="issueaction-attach-screenshot-html5" href="/secure/ShowAttachScreenshotFormAction!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="toggle-vote-issue" class="issueaction-vote-issue" href="/secure/VoteOrWatchIssue.jspa?atl_token=ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout&amp;id={0}&amp;vote=vote&returnUrl=/secure/issues"></a>
+                                    <a id="toggle-vote-issue" class="issueaction-unvote-issue" href="/secure/VoteOrWatchIssue.jspa?atl_token=ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout&amp;id={0}&amp;vote=unvote&returnUrl=/secure/issues"></a>
+                                    <a id="view-voters" class="issueaction-view-voters" href="/secure/ViewVoters!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="toggle-watch-issue" class="issueaction-watch-issue" href="/secure/VoteOrWatchIssue.jspa?atl_token=ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout&amp;id={0}&amp;watch=watch&returnUrl=/secure/issues"></a>
+                                    <a id="toggle-watch-issue" class="issueaction-unwatch-issue" href="/secure/VoteOrWatchIssue.jspa?atl_token=ASGJ-NC06-6R0X-EKH7|892dd7c6f607e6ba98a073d68b8d99702fdc8277|lout&amp;id={0}&amp;watch=unwatch&returnUrl=/secure/issues"></a>
+                                    <a id="manage-watchers" class="issueaction-manage-watchers" href="/secure/ManageWatchers!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="create-subtask" class="issueaction-create-subtask" href="/secure/CreateSubTaskIssue!default.jspa?parentIssueId={0}&returnUrl=/secure/issues"></a>
+                                    <a id="subtask-to-issue" class="issueaction-subtask-to-issue" href="/secure/ConvertSubTask.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="issue-to-subtask" class="issueaction-issue-to-subtask" href="/secure/ConvertIssue.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="cta-create-branch" class="devstatus-cta-link" href="#devstatus.cta.createbranch&returnUrl=/secure/issues"></a>
+                                    <a id="move-issue" class="issueaction-move-issue" href="/secure/MoveIssue!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="move-issue" class="issueaction-move-subtask" href="/secure/MoveSubTaskChooseOperation!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="link-issue" class="issueaction-link-issue" href="/secure/LinkJiraIssue!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="clone-issue" class="issueaction-clone-issue" href="/secure/CloneIssueDetails!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="edit-labels" class="issueaction-edit-labels" href="/secure/EditLabels!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                                    <a id="delete-issue" class="issueaction-delete-issue" href="/secure/DeleteIssue!default.jspa?id={0}&returnUrl=/secure/issues"></a>
+                            </div>
+        
+        <div id="user-parms" style="display:none;" data-user-parms="{&quot;createSharedObjects&quot;:false,&quot;createIssue&quot;:false}"></div>
+
+        <div class="navigator-sidebar" id="navigator-sidebar">
+                        <div style="width:180px">
+                                    </div>
+        </div>
+        <script type="text/javascript">
+            (function() {
+                var navigatorSidebarElement = jQuery(".navigator-sidebar");
+                if (JIRA.Issues.FilterPanelModel) {
+                    navigatorSidebarElement.toggleClass("collapsed", !JIRA.Issues.FilterPanelModel.prototype.isExpanded())
+                    if (JIRA.Issues.FilterPanelModel.prototype.isExpanded()) {
+                        navigatorSidebarElement.width(JIRA.Issues.FilterPanelModel.prototype.getWidth());
+                    }
+                }
+            })();
+        </script>
+        <div class="navigator-body">
+            <div class="contained-content">
+
+                <header class="saved-search-selector">
+                    <div class="saved-search-operations">
+                        <ul class="operations">
+
+                                                        <li class="aui-dd-parent"><a href="#" class="header-views header-operations aui-dropdown-trigger aui-dd-link standard icon-export lnk" title="Export this filter in another format" role="button"><span>Export</span></a></li>
+                            <li class="aui-dd-parent"><a href="#" class="header-tools header-operations aui-dropdown-trigger aui-dd-link standard icon-tools" title="Select operations that can be completed" role="button"><span>Tools</span></a></li>
+
+                        </ul>
+                        <div class="hidden operations-view-data">
+                            <fieldset class="hidden parameters">
+                            </fieldset>
+                        </div>
+                    </div>
+                    <span id="throbber-space" class="icon throbber"></span>
+                    <div id="search-header-view">
+                        <h1 class="search-title"></h1>
+                    </div>
+                </header>
+                <form class="navigator-search"></form>
+                <div class="navigator-group">
+                                        <div class="results-panel navigator-item">
+                        <div class="navigator-content"
+                                data-issue-table-model-state=""
+                                data-session-search-state=""
+                                data-selected-issue="{&quot;id&quot;:243424,&quot;key&quot;:&quot;SERVER-21858&quot;}">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="issue-container ">
+                                    <div id="issue-content" class="issue-edit-form">
+                    <header id="stalker" class="issue-header js-stalker">
+                        <div class="issue-header-content"><header class="aui-page-header"><div class="aui-page-header-inner"><div class="aui-page-header-image"><span id="10000" class="aui-avatar aui-avatar-large aui-avatar-project"><span class="aui-avatar-inner"><img id="project-avatar" alt="Uploaded image for project: &#39;Core Server&#39;" src="https://jira.mongodb.org/secure/projectavatar?pid=10000&amp;avatarId=13900" /></span></span></div><!-- .aui-page-header-image --><div class="aui-page-header-main"><ol class="aui-nav aui-nav-breadcrumbs"><li><a id="project-name-val" href="/browse/SERVER">Core Server</a></li><li><a class="issue-link" data-issue-key="SERVER-21858" href="/browse/SERVER-21858" id="key-val" rel="243424">SERVER-21858</a></li></ol><h1 id="summary-val">A high throughput update workload in a replica set can cause starvation of secondary reads</h1></div><!-- .aui-page-header-main --><div class="aui-page-header-actions"><div id="issue-header-pager"></div></div><!-- .aui-page-header-actions --></div><!-- .aui-page-header-inner --></header><!-- .aui-page-header --><div class="command-bar"><div class="ops-cont"><div class="ops-menus aui-toolbar"><div class="toolbar-split toolbar-split-left"><ul id="opsbar-opsbar-operations" class="toolbar-group pluggable-ops"><li class="toolbar-item"><a id="greenhopper-rapidboard-operation"title="View this issue on an Agile board"class="toolbar-trigger issueaction-greenhopper-rapidboard-operation js-rapidboard-operation-issue" href="/secure/GHGoToBoard.jspa?issueId=243424"><span class="trigger-label">Agile Board</span></a></li></ul><ul id="opsbar-opsbar-transitions" class="toolbar-group pluggable-ops"></ul><ul id="opsbar-opsbar-admin" class="toolbar-group pluggable-ops"></ul></div><div class="toolbar-split toolbar-split-right"><ul id="opsbar-jira.issue.tools" class="toolbar-group pluggable-ops"><li class="toolbar-item toolbar-dropdown"><div><a href="#"  id="viewissue-export"title="Export this issue in another format" data-hide-on-scroll=".split-view .issue-container" data-contain-to-window="true" class="toolbar-trigger  js-default-dropdown" ><span class="icon icon-export viewissue-export"></span> <span class="dropdown-text">Export</span><span class="icon drop-menu"></span></a><div class="aui-list hidden"><ul class="aui-list-section aui-first aui-last"><li class="aui-list-item"><a  href="/si/jira.issueviews:issue-xml/SERVER-21858/SERVER-21858.xml" class="aui-list-item-link"id="jira.issueviews:issue-xml"><span class="trigger-label">XML</span></a></li><li class="aui-list-item"><a  href="/si/jira.issueviews:issue-word/SERVER-21858/SERVER-21858.doc" class="aui-list-item-link"id="jira.issueviews:issue-word"><span class="trigger-label">Word</span></a></li><li class="aui-list-item"><a  href="/si/jira.issueviews:issue-html/SERVER-21858/SERVER-21858.html" class="aui-list-item-link"id="jira.issueviews:issue-html"><span class="trigger-label">Printable</span></a></li></ul></div></div></li></ul></div></div></div></div></div>
+                    </header>
+                    <div class="issue-body-content">
+                        <div class="aui-group issue-body"><div class="aui-item issue-main-column"><div id=details-module class="module toggle-wrap"><div id="details-module_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Details</h2></div><div class="mod-content">
+
+
+
+
+<ul id="issuedetails" class="property-list two-cols">
+    <li class="item">
+        <div class="wrap">
+            <strong class="name">Type:</strong>
+            <span id="type-val" class="value">
+                                <img  alt="" height="16" src="/images/icons/issuetypes/bug.png" title="Bug - A problem which impairs or prevents the functions of the product." width="16" /> Bug
+            </span>
+        </div>
+    </li>
+    <li class="item item-right">
+        <div class="wrap">
+            <strong class="name">Status:</strong>
+            <span id="status-val" class="value">
+                                <span class=" jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-blue-gray jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-medium" data-tooltip="&lt;span class=&quot;jira-issue-status-tooltip-title&quot;&gt;Open&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;jira-issue-status-tooltip-desc&quot;&gt;The issue is open and ready for the assignee to start work on it.&lt;/span&gt;">Open</span>            </span>
+                    </div>
+    </li>
+            <li class="item">
+            <div class="wrap">
+                <strong class="name">Priority:</strong>
+                <span id="priority-val" class="value">
+                                        <img  alt="" height="16" src="/images/icons/priorities/major.png" title="Major - P3 - Major loss of function." width="16" /> Major - P3
+                </span>
+            </div>
+        </li>
+                                <li class="item item-right">
+            <div class="wrap">
+                <strong class="name">Resolution:</strong>
+                <span id="resolution-val" class="value unresolved" >
+                                    Unresolved
+                                </span>
+            </div>
+        </li>
+                <li class="item">
+            <div class="wrap">
+                <strong class="name">Affects Version/s:</strong>
+                <span id="versions-val" class="value">
+                                            <span class="shorten" id="versions-field">
+                                                            <span title="3.0.7 Stable">3.0.7</span>,                                                            <span title="3.2.0 Stable">3.2.0</span>                                                    </span>
+                                    </span>
+            </div>
+        </li>
+                <li class="item item-right">
+            <div class="wrap">
+                <strong class="name">Fix Version/s:</strong>
+                <span id="fixfor-val" class="value">
+                                            <span class="shorten" id="fixVersions-field">
+                                                            <a href="/browse/SERVER/fixforversion/10165" title="debugging with submitter ">debugging with submitter</a>                                                    </span>
+                                    </span>
+            </div>
+        </li>
+                <li class="item">
+            <div class="wrap">
+                <strong class="name">Component/s:</strong>
+                <span id="components-val" class="value">
+                                            <span class="shorten" id="components-field">
+                                                            <a href="/browse/SERVER/component/10010" title="Replication ">Replication</a>,                                                            <a href="/browse/SERVER/component/13940" title="WiredTiger ">WiredTiger</a>                                                    </span>
+                                    </span>
+            </div>
+        </li>
+                    <li class="item full-width">
+            <div class="wrap" id="wrap-labels">
+                <strong class="name">Labels:</strong>
+                    <div class="labels-wrap value">
+            <span class="labels" id="labels-243424-value">None</span>
+                </div>
+            </div>
+        </li>
+        </ul>
+
+<div id="customfieldmodule">
+    <div class="aui-tabs horizontal-tabs" id="customfield-tabs">
+                    <div id="customfield-panel-1" class="tabs-pane active-pane">
+                        <ul class="property-list">
+                                                <li id="rowForcustomfield_10032" class="item">
+                        <div class="wrap">
+                            <strong title="Operating System" class="name">Operating System:</strong>
+                            <div id="customfield_10032-val" class="value type-select" data-fieldtype="select" data-fieldtypecompletekey="com.atlassian.jira.plugin.system.customfieldtypes:select">
+                                    ALL
+
+                            </div>
+                        </div>
+                    </li>
+                                                                <li id="rowForcustomfield_10750" class="item">
+                        <div class="wrap">
+                            <strong title="Steps To Reproduce" class="name">Steps To Reproduce:</strong>
+                            <div id="customfield_10750-val" class="value type-textarea twixified" data-fieldtype="textarea" data-fieldtypecompletekey="com.atlassian.jira.plugin.system.customfieldtypes:textarea">
+                                              <div id="field-customfield_10750" class="twixi-block expanded">
+            <div class="twixi-wrap verbose">
+                <a href="#" class="twixi"><span class="icon twixi-opened"><span>Hide</span></span></a>
+                <div class="flooded">
+                    <p>Launch mongod's:</p>
+<p/>
+<div id="syntaxplugin" class="syntaxplugin" style="border: 1px dashed #bbb; border-radius: 5px !important; overflow: auto; max-height: 30em;">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 1em; line-height: 1.4em !important; font-weight: normal; font-style: normal; color: black;">
+		<tbody >
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;  margin-top: 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">./mongod --replSet foo --storageEngine wiredTiger --dbpath /mnt/work/data/rs0 --oplogSize 1000 --wiredTigerCacheSizeGB 4 --logpath /mnt/work/data/rs0/mongod.log --fork</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   margin-bottom: 10px;  width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">./mongod --replSet foo --storageEngine wiredTiger --dbpath /mnt/work/data/rs1 --oplogSize 1000 --wiredTigerCacheSizeGB 4 --port 27018 --logpath /mnt/work/data/rs1/mongod.log --fork</span></pre>
+			</td>
+		</tr>
+			</tbody>
+</table>
+</div>
+<p/>
+
+<p>Setup the replset:</p>
+<p/>
+<div id="syntaxplugin" class="syntaxplugin" style="border: 1px dashed #bbb; border-radius: 5px !important; overflow: auto; max-height: 30em;">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 1em; line-height: 1.4em !important; font-weight: normal; font-style: normal; color: black;">
+		<tbody >
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;  margin-top: 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">rs.initiate()</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   margin-bottom: 10px;  width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">rs.add("localhost:27018")</span></pre>
+			</td>
+		</tr>
+			</tbody>
+</table>
+</div>
+<p/>
+
+<p>Run javascript against the primary to seed documents</p>
+<p/>
+<div id="syntaxplugin" class="syntaxplugin" style="border: 1px dashed #bbb; border-radius: 5px !important; overflow: auto; max-height: 30em;">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 1em; line-height: 1.4em !important; font-weight: normal; font-style: normal; color: black;">
+		<tbody >
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;  margin-top: 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">var INT_MAX=10000000;</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">for(x=0;x&lt;INT_MAX/1000;x++){</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	var bulk = db.test.initializeUnorderedBulkOp()</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	for(i=0;i&lt;1000;i++){</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">		var num = (x*1000)+i;</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">		bulk.insert({_id:num,x:num,y:num});</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	}</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	bulk.execute();</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   margin-bottom: 10px;  width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">}</span></pre>
+			</td>
+		</tr>
+			</tbody>
+</table>
+</div>
+<p/>
+
+<p>Execute the attached <tt>repro.rb</tt></p>
+
+<p>Run the following javascript on the secondary to monitor performance. You should see an initially stable number of query times, which will then blow out to seconds and minutes:</p>
+<p/>
+<div id="syntaxplugin" class="syntaxplugin" style="border: 1px dashed #bbb; border-radius: 5px !important; overflow: auto; max-height: 30em;">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 1em; line-height: 1.4em !important; font-weight: normal; font-style: normal; color: black;">
+		<tbody >
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;  margin-top: 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">while(true){</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">var INT_MAX=10000000;</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">start = new Date()</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">rs.slaveOk()</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">for(i=0;i&lt;10000;i++){</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	var docNum = Math.floor(Math.random()*INT_MAX);</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">	db.test.findOne({_id:docNum});</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">}</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">print("Took: " +(new Date() - start) + "ms")</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">sleep(1000);</span></pre>
+			</td>
+		</tr>
+				<tr id="syntaxplugin_code_and_gutter">
+						<td  style=" line-height: 1.4em !important; padding: 0em; vertical-align: top;">
+					<pre style="font-size: 1em; margin: 0 10px;   margin-bottom: 10px;  width: auto; padding: 0;"><span style="color: black; font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace !important;">}</span></pre>
+			</td>
+		</tr>
+			</tbody>
+</table>
+</div>
+<p/>
+                </div>
+            </div>
+            <div class="twixi-wrap concise">
+                <a href="#" class="twixi"><span class="icon twixi-closed"><span>Show</span></span></a>
+                <div class="flooded">
+                                             Launch mongod's: 
+ 
+ 
+ 
+		 
+				 
+						 
+					  ./mongod --replSet foo --storageEngine wiredTiger --dbpath /mnt/work/data/rs0 --oplogSize 1000 --wiredTigerCacheSizeGB 4 --logpath /mnt/work/data/rs0/mongod.log --fork  
+			 
+		 
+				 
+						 
+					  ./mongod --replSet foo --storageEngine wiredTiger --dbpath /mnt/work/data/rs1 --oplogSize 1000 --wiredTigerCacheSizeGB 4 --port 27018 --logpath /mnt/work/data/rs1/mongod.log --fork  
+			 
+		 
+			 
+ 
+ 
+ 
+
+ Setup the replset: 
+ 
+ 
+ 
+		 
+				 
+						 
+					  rs.initiate()  
+			 
+		 
+				 
+						 
+					  rs.add("localhost:27018")  
+			 
+		 
+			 
+ 
+ 
+ 
+
+ Run javascript against the primary to seed documents 
+ 
+ 
+ 
+		 
+				 
+						 
+					  var INT_MAX=10000000;  
+			 
+		 
+				 
+						 
+					  for(x=0;x&lt;INT_MAX/1000;x++){  
+			 
+		 
+				 
+						 
+					  	var bulk = db.test.initializeUnorderedBulkOp()  
+			 
+		 
+				 
+						 
+					  	for(i=0;i&lt;1000;i++){  
+			 
+		 
+				 
+						 
+					  		var num = (x*1000)+i;  
+			 
+		 
+				 
+						 
+					  		bulk.insert({_id:num,x:num,y:num});  
+			 
+		 
+				 
+						 
+					  	}  
+			 
+		 
+				 
+						 
+					  	bulk.execute();  
+			 
+		 
+				 
+						 
+					  }  
+			 
+		 
+			 
+ 
+ 
+ 
+
+ Execute the attached  repro.rb  
+
+ Run the following javascript on the secondary to monitor performance. You should see an initially stable number of query times, which will then blow out to seconds and minutes: 
+ 
+ 
+ 
+		 
+				 
+						 
+					  while(true){  
+			 
+		 
+				 
+						 
+					  var INT_MAX=10000000;  
+			 
+		 
+				 
+						 
+					  start = new Date()  
+			 
+		 
+				 
+						 
+					  rs.slaveOk()  
+			 
+		 
+				 
+						 
+					  for(i=0;i&lt;10000;i++){  
+			 
+		 
+				 
+						 
+					  	var docNum = Math.floor(Math.random()*INT_MAX);  
+			 
+		 
+				 
+						 
+					  	db.test.findOne({_id:docNum});  
+			 
+		 
+				 
+						 
+					  }  
+			 
+		 
+				 
+						 
+					  print("Took: " +(new Date() - start) + "ms")  
+			 
+		 
+				 
+						 
+					  sleep(1000);  
+			 
+		 
+				 
+						 
+					  }  
+			 
+		 
+			 
+ 
+ 
+ 
+                                    </div>
+            </div>
+        </div>
+      
+                            </div>
+                        </div>
+                    </li>
+                                        </ul>
+        </div>
+        </div></div>
+</div></div><div id=descriptionmodule class="module toggle-wrap"><div id="descriptionmodule_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Description</h2></div><div class="mod-content"><div id="description-val" class="field-ignore-highlight">
+    <div class="user-content-block">
+                    <p>Under an update only workload on the primary it is possible to starve out readers on a secondary and cause large replication delays.</p>
+
+<p>Workload:<br/>
+On Primary:</p>
+<ol>
+	<li>1000 small updates (integer sets, increments and an unset)</li>
+	<li>10 massive (500kb) updates</li>
+</ol>
+
+
+<p>On Secondary:</p>
+<ol>
+	<li>10000 findOne's</li>
+</ol>
+
+
+            </div>
+</div>
+</div></div><div id=attachmentmodule class="module toggle-wrap"><div id="attachmentmodule_heading" class="mod-header"><ul class="ops"><li class="drop"><div class="aui-dd-parent"><a href="#" class="icon drop-menu js-default-dropdown" title="Options"><span>Options</span></a><div class="aui-dropdown-content aui-list"><ul id="attachment-sorting-options"class="aui-list-section aui-first"><li class="aui-list-item"><a id="attachment-sort-key-name"href="/browse/SERVER-21858?attachmentSortBy=fileName#attachmentmodule"class="aui-list-checked aui-checked aui-list-item-link"title="viewissue.subtasks.tab.show.all.name"><span>Sort By Name</span></a></li><li class="aui-list-item"><a id="attachment-sort-key-date"href="/browse/SERVER-21858?attachmentSortBy=dateTime#attachmentmodule"class="aui-list-checked aui-list-item-link"title="Sort By Date"><span>Sort By Date</span></a></li></ul><ul id="attachment-sorting-order-options"class="aui-list-section"><li class="aui-list-item"><a id="attachment-sort-direction-asc"href="/browse/SERVER-21858?attachmentOrder=asc#attachmentmodule"class="aui-list-checked aui-checked aui-list-item-link"title="Ascending"><span>Ascending</span></a></li><li class="aui-list-item"><a id="attachment-sort-direction-desc"href="/browse/SERVER-21858?attachmentOrder=desc#attachmentmodule"class="aui-list-checked aui-list-item-link"title="Descending"><span>Descending</span></a></li></ul><ul id="attachment-manage-options"class="aui-list-section aui-last"><li class="aui-list-item"><a id="aszip"href="/secure/attachmentzip/243424.zip"class="aui-list-checked aui-list-item-link"title="Download all attachments as a ZIP file"><span>Download All</span></a></li></ul></div></div></li></ul><h2 class="toggle-title">Attachments</h2></div><div class="mod-content">
+            <ol id="file_attachments" class="item-attachments">
+                            <li class="attachment-content">
+                                            <div class="attachment-thumb">
+                            <a href="/secure/attachment/101737/307.html" draggable="true" data-downloadurl="text/html:307.html:https://jira.mongodb.org/secure/attachment/101737/307.html">
+                                    <img src="/images/icons/attach/html.gif" height="16" width="16" border="0" alt="HTML File">
+                            </a>
+                        </div>
+                        <dl>
+                                <dt class="attachment-title">
+        <a href="/secure/attachment/101737/307.html"
+            title="Latest  Dec 11 2015 05:18:26 AM UTC - David Hows" draggable="true"
+            data-downloadurl="text/html:307.html:https://jira.mongodb.org/secure/attachment/101737/307.html">307.html
+        </a>
+    </dt>
+    <dd class="attachment-delete">
+                    <span class="icon"></span>
+            </dd>
+    <dd class="attachment-date"><time class="livestamp" datetime="2015-12-11T05:18:26+0000">Dec 11 2015 05:18:26 AM UTC</time></dd>
+    <dd class="attachment-size">4.90 MB</dd>
+    <dd class="attachment-author">David Hows</dd>
+                        </dl>
+                                    </li>
+                            <li class="attachment-content">
+                                            <div class="attachment-thumb">
+                            <a href="/secure/attachment/101738/320.html" draggable="true" data-downloadurl="text/html:320.html:https://jira.mongodb.org/secure/attachment/101738/320.html">
+                                    <img src="/images/icons/attach/html.gif" height="16" width="16" border="0" alt="HTML File">
+                            </a>
+                        </div>
+                        <dl>
+                                <dt class="attachment-title">
+        <a href="/secure/attachment/101738/320.html"
+            title="Latest  Dec 11 2015 05:18:26 AM UTC - David Hows" draggable="true"
+            data-downloadurl="text/html:320.html:https://jira.mongodb.org/secure/attachment/101738/320.html">320.html
+        </a>
+    </dt>
+    <dd class="attachment-delete">
+                    <span class="icon"></span>
+            </dd>
+    <dd class="attachment-date"><time class="livestamp" datetime="2015-12-11T05:18:26+0000">Dec 11 2015 05:18:26 AM UTC</time></dd>
+    <dd class="attachment-size">4.90 MB</dd>
+    <dd class="attachment-author">David Hows</dd>
+                        </dl>
+                                    </li>
+                            <li class="attachment-content">
+                                            <div class="attachment-thumb">
+                            <a href="/secure/attachment/101734/repro.rb" draggable="true" data-downloadurl="${fileAttachment.mimetype}:repro.rb:https://jira.mongodb.org/secure/attachment/101734/repro.rb">
+                                    <img src="/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File">
+                            </a>
+                        </div>
+                        <dl>
+                                <dt class="attachment-title">
+        <a href="/secure/attachment/101734/repro.rb"
+            title="Latest  Dec 11 2015 05:08:55 AM UTC - David Hows" draggable="true"
+            data-downloadurl="${attachment.mimetype}:repro.rb:https://jira.mongodb.org/secure/attachment/101734/repro.rb">repro.rb
+        </a>
+    </dt>
+    <dd class="attachment-delete">
+                    <span class="icon"></span>
+            </dd>
+    <dd class="attachment-date"><time class="livestamp" datetime="2015-12-11T05:08:55+0000">Dec 11 2015 05:08:55 AM UTC</time></dd>
+    <dd class="attachment-size">0.9 kB</dd>
+    <dd class="attachment-author">David Hows</dd>
+                        </dl>
+                                    </li>
+                    </ol>
+                <ol id="attachment_thumbnails" class="item-attachments">
+                            <li class="attachment-content" draggable="true" data-downloadurl="image/png:lag.png:https://jira.mongodb.org/secure/attachment/101789/lag.png">
+                    <div class="attachment-thumb">
+                        <a class="gallery" rel="gallery" href="/secure/attachment/101789/lag.png" title="lag.png - Latest Dec 11 2015 12:29:42 PM UTC - Bruce Lucas">
+                            <img src="https://jira.mongodb.org/secure/thumbnail/101789/_thumb_101789.png" width="200" height="58" alt="" />
+                        </a>
+                    </div>
+                    <dl >
+                        <dt>
+                                                            <span class="blender"></span>
+                                                        <a class="attachment-title" href="/secure/attachment/101789/lag.png" title="lag.png - Latest Dec 11 2015 12:29:42 PM UTC - Bruce Lucas">lag.png</a>
+                        </dt>
+                        <dd class="attachment-size">251 kB</dd>
+                        <dd class="attachment-date"><time class="livestamp" datetime="2015-12-11T12:29:42+0000">Dec 11 2015 12:29:42 PM UTC</time></dd>
+                    </dl>
+                </li>
+                    </ol>
+    </div></div><div id=linkingmodule class="module toggle-wrap"><div id="linkingmodule_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Issue Links</h2></div><div class="mod-content">
+
+
+
+
+
+
+        <dl class="links-list ">
+        <dt title="is related to">is related to</dt>
+                    <dd id="internal-210754_10012"
+                            >
+            <div class="link-content">
+                                    
+
+
+
+<p>
+            <img src="/images/icons/issuetypes/subtask_alternate.png" width="16" height="16" title="Sub-task - The sub-task of the issue" alt="Sub-task - The sub-task of the issue" />
+        <span title="SERVER-18983: Process oplog inserts, and applying, on the secondary in parallel">
+        <a href="/browse/SERVER-18983" data-issue-key="SERVER-18983" class="issue-link link-title">SERVER-18983</a>
+        <span class="link-summary">Process oplog inserts, and applying, on the secondary in parallel</span>
+    </span>
+</p>
+<ul class="link-snapshot">
+        <li class="priority">        <img src="/images/icons/priorities/major.png" width="16" height="16" title="Major - P3 - Major loss of function." alt="Major - P3 - Major loss of function." />
+    </li>
+                <li class="status">
+                        <span class=" jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-blue-gray jira-issue-status-lozenge-new aui-lozenge-subtle jira-issue-status-lozenge-max-width-short" data-tooltip="&lt;span class=&quot;jira-issue-status-tooltip-title&quot;&gt;Open&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;jira-issue-status-tooltip-desc&quot;&gt;The issue is open and ready for the assignee to start work on it.&lt;/span&gt;">Open</span>
+                    </li>
+    </ul>
+                            </div>
+                    </dd>
+                    <dd id="internal-209769_10012"
+                            >
+            <div class="link-content">
+                                    
+
+
+
+<p>
+            <img src="/images/icons/issuetypes/bug.png" width="16" height="16" title="Bug - A problem which impairs or prevents the functions of the product." alt="Bug - A problem which impairs or prevents the functions of the product." />
+        <span title="SERVER-18908: Secondaries unable to keep up with primary under WiredTiger">
+        <a href="/browse/SERVER-18908" data-issue-key="SERVER-18908" class="issue-link link-title">SERVER-18908</a>
+        <span class="link-summary">Secondaries unable to keep up with primary under WiredTiger</span>
+    </span>
+</p>
+<ul class="link-snapshot">
+        <li class="priority">        <img src="/images/icons/priorities/critical.png" width="16" height="16" title="Critical - P2 - Crashes, loss of data, severe memory leak." alt="Critical - P2 - Crashes, loss of data, severe memory leak." />
+    </li>
+                <li class="status">
+                        <span class=" jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-yellow jira-issue-status-lozenge-indeterminate aui-lozenge-subtle jira-issue-status-lozenge-max-width-short" data-tooltip="&lt;span class=&quot;jira-issue-status-tooltip-title&quot;&gt;In Progress&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;jira-issue-status-tooltip-desc&quot;&gt;This issue is being actively worked on at the moment by the assignee.&lt;/span&gt;">In Progress</span>
+                    </li>
+    </ul>
+                            </div>
+                    </dd>
+            </dl>
+        
+    <script type="text/javascript">
+        function updateRemoteLink(id, htmlElementId) {
+            JIRA.SmartAjax.makeRequest({
+                error: function(jqXHR, textStatus, errorThrown) {
+                    AJS.$("#" + htmlElementId + " div.link-content .link-loading").
+                            removeClass("link-loading").
+                            addClass("link-loading-failed").
+                            html("Failed to load");
+                    AJS.$("#" + htmlElementId + " div.link-content .link-throbber").html("<img src='/images/icons/generic_link_16.png' width='16' height='16' title='' alt='' />")
+                },
+                success: function(data) {
+                    AJS.$("#" + htmlElementId + " div.link-content").html(data);
+                },
+                url: "/rest/viewIssue/1/remoteIssueLink/render/" + id
+            });
+        }
+
+                                                                                            
+            </script>
+
+</div></div><div id=activitymodule class="module toggle-wrap"><div id="activitymodule_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Activity</h2></div><div class="mod-content">
+
+
+
+
+
+
+
+
+
+
+    <div class="tabwrap tabs2">
+
+        <ul id="issue-tabs" class="tabs horizontal">
+                                
+            <li  class="active" id="comment-tabpanel"  data-id="comment-tabpanel" data-key="com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel" data-label="Comments" data-href="/browse/SERVER-21858?page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel">
+                            <strong tabindex="0">Comments</strong>
+                        </li>
+                </ul>
+
+                    <div class="sortwrap">
+                                    <a class="icon icon-sort-down ajax-activity-content" rel="nofollow" href="/browse/SERVER-21858?actionOrder=desc" title="Ascending order - Click to sort in descending order"><span>Ascending order - Click to sort in descending order</span></a>
+                            </div>
+            </div>
+    <div class="issuePanelWrapper">
+        <div class="issuePanelProgress"></div>
+        <div class="issuePanelContainer" id="issue_actions_container">
+                                    
+
+
+<div id="comment-1111708" class="issue-data-block activity-comment twixi-block  expanded">
+    <div class="twixi-wrap verbose actionContainer">
+        <div class="action-head">
+            <a href="#" title="Collapse comment" class="twixi"><span class="icon twixi-opened"><span>Hide</span></span></a>
+            <div class="action-links">
+                <a href="/browse/SERVER-21858?focusedCommentId=1111708&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-1111708" title="Right click and copy link for a permanent link to this comment." class="icon icon-perma activitymodule-link"><span>Permalink</span></a>
+                                            </div>
+            <div class="action-details">        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111708_verbose" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111708_verbose subText'><span class='date user-tz' title='Dec 11 2015 05:08:55 AM UTC'><time class='livestamp' datetime='2015-12-11T05:08:55+0000'>Dec 11 2015 05:08:55 AM UTC</time></span></span>  </div>
+        </div>
+        <div class="action-body flooded"><p>The repro script requires the MongoDB ruby driver v2.2.0.</p> </div>
+    </div>
+    <div class="twixi-wrap concise actionContainer">
+        <div class="action-head">
+            <a href="#" title="Expand comment" class="twixi"><span class="icon twixi-closed"><span>Show</span></span></a>
+            <div class="action-details flooded">
+                        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111708_concise" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111708_concise subText'><span class='date user-tz' title='Dec 11 2015 05:08:55 AM UTC'><time class='livestamp' datetime='2015-12-11T05:08:55+0000'>Dec 11 2015 05:08:55 AM UTC</time></span></span>                    The repro script requires the MongoDB ruby driver v2.2.0.              </div>
+        </div>
+    </div>
+</div>
+                             
+
+
+<div id="comment-1111716" class="issue-data-block activity-comment twixi-block  expanded">
+    <div class="twixi-wrap verbose actionContainer">
+        <div class="action-head">
+            <a href="#" title="Collapse comment" class="twixi"><span class="icon twixi-opened"><span>Hide</span></span></a>
+            <div class="action-links">
+                <a href="/browse/SERVER-21858?focusedCommentId=1111716&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-1111716" title="Right click and copy link for a permanent link to this comment." class="icon icon-perma activitymodule-link"><span>Permalink</span></a>
+                                            </div>
+            <div class="action-details">        
+    
+    
+                                            
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111716_verbose" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111716_verbose subText'><span class='date user-tz' title='Dec 11 2015 05:18:26 AM UTC'><time class='livestamp' datetime='2015-12-11T05:18:26+0000'>Dec 11 2015 05:18:26 AM UTC</time></span></span>   - <span class="redText subText" title="David Hows - Dec 11 2015 05:23:50 AM UTC">edited</span> </div>
+        </div>
+        <div class="action-body flooded"><p>Attaching the results of timeseries on the serverStatus captures on 2 repro runs.</p>
+
+<p>The 3.0.7 run is far longer as it was the initial reproduction and some changes were made to reproducer to get things going. You can also see a point when I stopped the reproduction to confirm that execution eventually returned to normal (it did).</p>
+
+<p>The 3.2.0 run is far more indicative, as it was just load and reproduce.</p>
+
+<p>Probably the most telling symptom at this stage is the <tt>Global timeAcquiringMicros r</tt> in the 3.2.0 timeseries attachment, it begins spiking as soon as the ability to read falls behind.</p> </div>
+    </div>
+    <div class="twixi-wrap concise actionContainer">
+        <div class="action-head">
+            <a href="#" title="Expand comment" class="twixi"><span class="icon twixi-closed"><span>Show</span></span></a>
+            <div class="action-details flooded">
+                        
+    
+    
+                                            
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111716_concise" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111716_concise subText'><span class='date user-tz' title='Dec 11 2015 05:18:26 AM UTC'><time class='livestamp' datetime='2015-12-11T05:18:26+0000'>Dec 11 2015 05:18:26 AM UTC</time></span></span>   - <span class="redText subText" title="David Hows - Dec 11 2015 05:23:50 AM UTC">edited</span>                   Attaching the results of timeseries on the serverStatus captures on 2 repro runs. 
+
+ The 3.0.7 run is far longer as it was the initial reproduction and some changes were made to reproducer to get things going. You can also see a point when I stopped the reproduction to confirm that execution eventually returned to normal (it did). 
+
+ The 3.2.0 run is far more indicative, as it was just load and reproduce. 
+
+ Probably the most telling symptom at this stage is the  Global timeAcquiringMicros r  in the 3.2.0 timeseries attachment, it begins spiking as soon as the ability to read falls behind.              </div>
+        </div>
+    </div>
+</div>
+                             
+
+
+<div id="comment-1111737" class="issue-data-block activity-comment twixi-block  expanded">
+    <div class="twixi-wrap verbose actionContainer">
+        <div class="action-head">
+            <a href="#" title="Collapse comment" class="twixi"><span class="icon twixi-opened"><span>Hide</span></span></a>
+            <div class="action-links">
+                <a href="/browse/SERVER-21858?focusedCommentId=1111737&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-1111737" title="Right click and copy link for a permanent link to this comment." class="icon icon-perma activitymodule-link"><span>Permalink</span></a>
+                                            </div>
+            <div class="action-details">        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111737_verbose" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111737_verbose subText'><span class='date user-tz' title='Dec 11 2015 05:39:17 AM UTC'><time class='livestamp' datetime='2015-12-11T05:39:17+0000'>Dec 11 2015 05:39:17 AM UTC</time></span></span>  </div>
+        </div>
+        <div class="action-body flooded"><p>Current working hypothesis is that there is some delay in the processing of replication operations that is causing the delay.</p>
+
+<p>The aim with the reproduction workload was to generate a large number of deletes at once when truncating the oplog to allow for the insertion of a new very large document in an update only workload.</p>
+
+<p>Initially, I suspected this may have been related to tombstones within the oplog collection in WiredTiger, thus the large/small update workload in a replica set. However, as <a href="https://jira.mongodb.org/browse/SERVER-21027" title="Reduced performance of index lookups after removing documents from collection" class="issue-link" data-issue-key="SERVER-21027"><del>SERVER-21027</del></a> is fixed within 3.2.0, I am uncertain if this is the cause.</p>
+ </div>
+    </div>
+    <div class="twixi-wrap concise actionContainer">
+        <div class="action-head">
+            <a href="#" title="Expand comment" class="twixi"><span class="icon twixi-closed"><span>Show</span></span></a>
+            <div class="action-details flooded">
+                        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="david.hows" id="commentauthor_1111737_concise" href="/secure/ViewProfile.jspa?name=david.hows"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="david.hows" /></span></span> David Hows</a>
+ added a comment  - <span class='commentdate_1111737_concise subText'><span class='date user-tz' title='Dec 11 2015 05:39:17 AM UTC'><time class='livestamp' datetime='2015-12-11T05:39:17+0000'>Dec 11 2015 05:39:17 AM UTC</time></span></span>                    Current working hypothesis is that there is some delay in the processing of replication operations that is causing the delay. 
+
+ The aim with the reproduction workload was to generate a large number of deletes at once when truncating the oplog to allow for the insertion of a new very large document in an update only workload. 
+
+ Initially, I suspected this may have been related to tombstones within the oplog collection in WiredTiger, thus the large/small update workload in a replica set. However, as   SERVER-21027   is fixed within 3.2.0, I am uncertain if this is the cause. 
+             </div>
+        </div>
+    </div>
+</div>
+                             
+
+
+<div id="comment-1111931" class="issue-data-block activity-comment twixi-block  expanded">
+    <div class="twixi-wrap verbose actionContainer">
+        <div class="action-head">
+            <a href="#" title="Collapse comment" class="twixi"><span class="icon twixi-opened"><span>Hide</span></span></a>
+            <div class="action-links">
+                <a href="/browse/SERVER-21858?focusedCommentId=1111931&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-1111931" title="Right click and copy link for a permanent link to this comment." class="icon icon-perma activitymodule-link"><span>Permalink</span></a>
+                                            </div>
+            <div class="action-details">        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="bruce.lucas" id="commentauthor_1111931_verbose" href="/secure/ViewProfile.jspa?name=bruce.lucas"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="bruce.lucas" /></span></span> Bruce Lucas</a>
+ added a comment  - <span class='commentdate_1111931_verbose subText'><span class='date user-tz' title='Dec 11 2015 12:34:06 PM UTC'><time class='livestamp' datetime='2015-12-11T12:34:06+0000'>Dec 11 2015 12:34:06 PM UTC</time></span></span>  </div>
+        </div>
+        <div class="action-body flooded"><p><img src="/secure/attachment/101789/101789_lag.png" align="absmiddle" border="0" width="900" /></p>
+
+<ul>
+	<li>Replication lag builds under the insert workload, as indicated by the repl buffer stats. (The 3.2 ftdc data will have a more direct indication of this.) This means replication is struggling, and that is what is probably what is starving the reads, because we "stop the world" using the global lock during replication.</li>
+	<li>This does not show up as read queues because of <a href="https://jira.mongodb.org/browse/SERVER-21859" title="The globalLock.currentQueue stat doesn&#39;t include operations queued for the global lock" class="issue-link" data-issue-key="SERVER-21859">SERVER-21859</a>, but the global lock time acquiring stat supports this as you point out. The WT concurrentTransactions metric is also consistent with this - the reads are not queuing in WT.</li>
+	<li>The main operations done by replication are applying the ops and inserting them into the oplog. Time spent applying the ops is reported in "repl apply batches totalMillis", but this is not large, so the replication lag is most likely related to inserting ops into the oplog, and that is also consistent with the customer's observation.</li>
+</ul>
+
+
+<p>If the above is correct, this is a known issue, and there are a couple tickets tracking work in this area - <a href="https://jira.mongodb.org/browse/SERVER-18908" title="Secondaries unable to keep up with primary under WiredTiger" class="issue-link" data-issue-key="SERVER-18908">SERVER-18908</a>, <a href="https://jira.mongodb.org/browse/SERVER-18983" title="Process oplog inserts, and applying, on the secondary in parallel" class="issue-link" data-issue-key="SERVER-18983">SERVER-18983</a>. In this case for example you have 20 threads on the primary inserting into the oplog in parallel whereas that is serialized on the secondary, so that may account for the lag. In any case stack traces would help diagnose this of course.</p> </div>
+    </div>
+    <div class="twixi-wrap concise actionContainer">
+        <div class="action-head">
+            <a href="#" title="Expand comment" class="twixi"><span class="icon twixi-closed"><span>Show</span></span></a>
+            <div class="action-details flooded">
+                        
+    
+    
+    
+                
+
+    <a class="user-hover user-avatar" rel="bruce.lucas" id="commentauthor_1111931_concise" href="/secure/ViewProfile.jspa?name=bruce.lucas"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=xsmall&amp;avatarId=10122" alt="bruce.lucas" /></span></span> Bruce Lucas</a>
+ added a comment  - <span class='commentdate_1111931_concise subText'><span class='date user-tz' title='Dec 11 2015 12:34:06 PM UTC'><time class='livestamp' datetime='2015-12-11T12:34:06+0000'>Dec 11 2015 12:34:06 PM UTC</time></span></span>                      
+
+ 
+	 Replication lag builds under the insert workload, as indicated by the repl buffer stats. (The 3.2 ftdc data will have a more direct indication of this.) This means replication is struggling, and that is what is probably what is starving the reads, because we "stop the world" using the global lock during replication. 
+	 This does not show up as read queues because of  SERVER-21859 , but the global lock time acquiring stat supports this as you point out. The WT concurrentTransactions metric is also consistent with this - the reads are not queuing in WT. 
+	 The main operations done by replication are applying the ops and inserting them into the oplog. Time spent applying the ops is reported in "repl apply batches totalMillis", but this is not large, so the replication lag is most likely related to inserting ops into the oplog, and that is also consistent with the customer's observation. 
+ 
+
+
+ If the above is correct, this is a known issue, and there are a couple tickets tracking work in this area -  SERVER-18908 ,  SERVER-18983 . In this case for example you have 20 threads on the primary inserting into the oplog in parallel whereas that is serialized on the secondary, so that may account for the lag. In any case stack traces would help diagnose this of course.              </div>
+        </div>
+    </div>
+</div>
+                             </div>
+    </div>
+</div></div></div><div id="viewissuesidebar" class="aui-item issue-side-column"><div id=peoplemodule class="module toggle-wrap"><div id="peoplemodule_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">People</h2></div><div class="mod-content"><ul class="item-details" id="peopledetails">
+    <li class="people-details">
+                <dl>
+            <dt>Assignee:</dt>
+            <dd>
+                <span id="assignee-val" class="view-issue-field">
+
+            <span class="user-hover" id="issue_summary_assignee_stennie" rel="stennie">
+            <span class="aui-avatar aui-avatar-small"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=small&amp;avatarId=10122" alt="stennie" /></span></span>
+            Stephen Steneker
+        </span>
+    </span>
+                            </dd>
+        </dl>
+                        <dl>
+            <dt>Reporter:</dt>
+            <dd>
+                <span id="reporter-val" class="view-issue-field">
+
+            <span class="user-hover" id="issue_summary_reporter_david.hows" rel="david.hows">
+            <span class="aui-avatar aui-avatar-small"><span class="aui-avatar-inner"><img src="/secure/useravatar?size=small&amp;avatarId=10122" alt="david.hows" /></span></span>
+            David Hows
+        </span>
+    </span>
+            </dd>
+        </dl>
+                        <dl>
+            <dt title="Participants">Participants:</dt>
+            <dd><span id="customfield_10051-val" data-name="Participants" data-fieldtype="participants" data-fieldtypecompletekey="com.atlassian.jira.toolkit:participants">    <div class="shorten" id="customfield_10051-field">
+                    <a class="user-hover cf-participant" rel="bruce.lucas" title="Find all issues Bruce Lucas participated in" href="/secure/IssueNavigator.jspa?reset=true&customfield_10051=bruce.lucas">Bruce Lucas</a>,                     <a class="user-hover cf-participant" rel="david.hows" title="Find all issues David Hows participated in" href="/secure/IssueNavigator.jspa?reset=true&customfield_10051=david.hows">David Hows</a>,                     <a class="user-hover cf-participant" rel="stennie" title="Find all issues Stephen Steneker participated in" href="/secure/IssueNavigator.jspa?reset=true&customfield_10051=stennie">Stephen Steneker</a>            </div>
+</span></dd>
+        </dl>
+                <dl>
+            <dt title="Last commenter">Last commenter:</dt>
+            <dd><span id="customfield_10056-val" data-name="Last commenter" data-fieldtype="lastupdaterorcommenter" data-fieldtypecompletekey="com.atlassian.jira.toolkit:lastupdaterorcommenter">        <span class="tinylink">        <span class="user-hover" rel="bruce.lucas" id="user_cf_bruce.lucas">Bruce Lucas</span></span>
+    </span></dd>
+        </dl>
+            </li>
+</ul>
+    <ul class="item-details">
+        <li>
+                            <dl>
+                    <dt>Votes:</dt>
+                    <dd>
+                                                                            <span id="vote-data" class="aui-badge vote-state-off">0</span>
+                        
+                                                                                                        <span id="vote-label" title="You have to be logged in to vote for an issue.">Vote for this issue</span>
+                                            </dd>
+                </dl>
+                                        <dl>
+                    <dt>Watchers:</dt>
+                    <dd>
+                                                                        
+                                                                            <span id="watcher-data" class="aui-badge watch-state-off">9</span>
+                        
+                                                                                <span id="watch-label" title="You have to be logged in to watch an issue.">Start watching this issue</span>
+                                            </dd>
+                </dl>
+                    </li>
+    </ul>
+</div></div><div id=datesmodule class="module toggle-wrap"><div id="datesmodule_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Dates</h2></div><div class="mod-content"><ul class="item-details">
+    <li>
+            <dl class="dates">
+            <dt>Created:</dt>
+            <dd class="date user-tz"  title="Dec 11 2015 05:07:07 AM UTC" >
+
+                <span data-name="Created" id="create-date"  data-fieldtype="datetime"  >
+                                                                        <time class="livestamp" datetime="2015-12-11T05:07:07+0000">Dec 11 2015 05:07:07 AM UTC</time>                                                             </span>
+            </dd>
+        </dl>
+            <dl class="dates">
+            <dt>Updated:</dt>
+            <dd class="date user-tz"  title="Dec 11 2015 12:35:01 PM UTC" >
+
+                <span data-name="Updated" id="updated-date"  data-fieldtype="datetime"  >
+                                                                        <time class="livestamp" datetime="2015-12-11T12:35:01+0000">Dec 11 2015 12:35:01 PM UTC</time>                                                             </span>
+            </dd>
+        </dl>
+            <dl class="dates">
+            <dt>Days since reply:</dt>
+            <dd class="date " >
+
+                <span data-name="Days since reply" id="customfield_10052-val"  data-fieldtype="dayslastcommented"   data-fieldtypecompletekey="com.atlassian.jira.toolkit:dayslastcommented" >
+                                                        2 days ago
+                                                                 </span>
+            </dd>
+        </dl>
+            <dl class="dates">
+            <dt>Date of 1st Reply:</dt>
+            <dd class="date " >
+
+                <span data-name="Date of 1st Reply" id="customfield_10055-val"  data-fieldtype="firstresponsedate"   data-fieldtypecompletekey="com.atlassian.jira.ext.charting:firstresponsedate" >
+                                                        <span title="Dec 11 2015 05:21:56 AM UTC"><time class="livestamp allow-future" datetime="2015-12-11T05:21:56+0000">11/Dec/15 5:21 AM</time></span>
+                                         </span>
+            </dd>
+        </dl>
+        </li>
+</ul>
+</div></div><div id=commenter-details class="module toggle-wrap"><div id="commenter-details_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title"></h2></div><div class="mod-content"><script type="text/javascript">
+    $(function(){
+        $("#commenter-details").hide();
+
+        var internalCommenters = [
+                            "david.hows",
+                            "ramon.fernandez",
+                            "bruce.lucas",
+                    ];
+
+        function highlightCommenters(){
+            var i;
+            for (i = 0; i < internalCommenters.length; i++){
+                var internalComments = $(".activity-comment .action-details a[rel='" + internalCommenters[i] + "']");
+                internalComments.each(function(i){
+                    var sibling = $(this);
+                    var leaf = sibling.closest('.action-details').find('.mongo-employee');
+                    if(!leaf.length){
+                        sibling.before('<div style="height: 22px; width: 10px; background-image: url(\'https://media.mongodb.org/logo-mongodb-leaf-20.png\'); background-repeat: no-repeat; background-position: left center; float: left;" class="mongo-employee"></div>');
+                    }
+                });
+            }
+        }
+
+        window.setTimeout(function(){
+            window.setInterval(highlightCommenters, 1000);
+        }, 0);
+    });
+</script></div></div><div id=greenhopper-agile-issue-web-panel class="module toggle-wrap"><div id="greenhopper-agile-issue-web-panel_heading" class="mod-header"><ul class="ops"></ul><h2 class="toggle-title">Agile</h2></div><div class="mod-content">
+
+<ul class="item-details ghx-separated">
+    <li>
+        <a class="issueaction-greenhopper-rapidboard-operation js-rapidboard-operation-issue"
+           href="/secure/GHGoToBoard.jspa?issueId=243424"
+           title="View this issue on an Agile board">
+            View on Board
+        </a>
+    </li>
+</ul>
+</div></div></div></div>
+                    </div>
+                </div>
+                        </div>
+
+    <fieldset class="hidden parameters">
+        <input type="hidden" title="autocompleteEnabled" value="true"/>
+    </fieldset>
+    
+    </section>
+    <footer id="footer" role="contentinfo">
+        
+        
+
+<section class="footer-body">
+
+
+
+<ul class="atlassian-footer">
+    <li>
+        Atlassian JIRA <a class="seo-link" href="https://www.atlassian.com/software/jira">Project Management Software</a>
+
+                                    
+                        
+        <span id="footer-build-information">(v6.3.15#6346-<span title='dbc023dd75cecacf443c4b235f66124b15f5c5fe' data-commit-id='dbc023dd75cecacf443c4b235f66124b15f5c5fe}'>sha1:dbc023d</span>)</span>
+    </li>
+    <li>
+        <a id="about-link" href="/secure/AboutPage.jspa">About JIRA</a>
+    </li>
+    <li>
+                        <a id="footer-report-problem-link" href="/secure/CreateIssue!default.jspa">Report a problem</a>
+    </li>
+</ul>
+    <ul class="atlassian-footer">
+        <li class="licensemessage">
+                            Powered by a free Atlassian <a href='http://www.atlassian.com/software/jira'>JIRA</a> open source license for MongoDB. Try JIRA - <a href='http://www.atlassian.com/software/jira'>bug tracking software</a> for <i>your</i> team.
+
+                    </li>
+    </ul>
+
+<form id="jira_request_timing_info" class="dont-default-focus" >
+	<fieldset class="parameters hidden">
+		<input type="hidden" title="jira.request.start.millis" value="1450013776367" />
+		<input type="hidden" title="jira.request.server.time" value="119" />
+		<input type="hidden" title="jira.request.id" value="816x209498x2" />
+		<input type="hidden" title="jira.session.expiry.time" value="-" />
+		<input type="hidden" title="jira.session.expiry.in.mins" value="-" />
+		<input id="jiraConcurrentRequests" type="hidden" name="jira.request.concurrent.requests" value="3" />
+	</fieldset>
+</form>
+<!--
+	                 REQUEST ID : 816x209498x2
+	          REQUEST TIMESTAMP : [13/Dec/2015:13:36:16 +0000]
+	               REQUEST TIME : 0.1190
+	                 ASESSIONID : -
+	        CONCURRENT REQUESTS : 3
+
+	                      db.reads : name=db.reads; inv=49; ms=23; cpu=0; rss=0;
+	                      db.conns : name=db.conns; inv=49; ms=32; cpu=0; rss=0;
+-->
+    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+</section>
+
+
+
+
+
+
+
+
+
+<fieldset class="hidden parameters">
+    <input type="hidden" title="loggedInUser" value="">
+    <input type="hidden" title="ajaxTimeout" value="The call to the JIRA server did not complete within the timeout period.  We are unsure of the result of this operation.">
+    <input type="hidden" title="JiraVersion" value="6.3.15" />
+    <input type="hidden" title="ajaxUnauthorised" value="You are not authorized to perform this operation.  Please log in.">
+    <input type="hidden" title="baseURL" value="https://jira.mongodb.org:443">
+    <input type="hidden" title="ajaxCommsError" value="The JIRA server could not be contacted. This may be a temporary glitch or the server may be down.">
+    <input type="hidden" title="ajaxServerError" value="The JIRA server was contacted but has returned an error response. We are unsure of the result of this operation.">
+    <input type="hidden" title="ajaxErrorCloseDialog" value="Close this dialog and press refresh in your browser">
+    <input type="hidden" title="ajaxErrorDialogHeading" value="Communications Breakdown">
+
+    <input type="hidden" title="dirtyMessage" value="You have entered new data on this page. If you navigate away from this page without first saving your data, the changes will be lost.">
+    <input type="hidden" title="dirtyDialogMessage" value="You have entered new data in this dialog. If you navigate away from this dialog without first saving your data, the changes will be lost. Click cancel to return to the dialog.">
+    <input type="hidden" title="keyType" value="Type">
+    <input type="hidden" title="keyThen" value="then">
+    <input type="hidden" title="dblClickToExpand" value="Double click to expand">
+    <input type="hidden" title="actions" value="Actions">
+    <input type="hidden" title="removeItem" value="Remove">
+    <input type="hidden" title="workflow" value="Workflow">
+    <input type="hidden" title="labelNew" value="New Label">
+    <input type="hidden" title="issueActionsHint" value="Begin typing for available operations or press down to see all">
+    <input type="hidden" title="closelink" value="Close">
+    <input type="hidden" title="dotOperations" value="Operations">
+    <input type="hidden" title="dotLoading" value="Loading...">
+    <input type="hidden" title="frotherSuggestions" value="Suggestions">
+    <input type="hidden" title="frotherNomatches" value="No Matches">
+    <input type="hidden" title="multiselectVersionsError" value="{0} is not a valid version.">
+    <input type="hidden" title="multiselectComponentsError" value="{0} is not a valid component.">
+    <input type="hidden" title="multiselectGenericError" value="The value {0} is invalid.">
+</fieldset>
+
+    </footer>
+</div>
+</body>
+</html>

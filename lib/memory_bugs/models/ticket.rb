@@ -29,7 +29,6 @@ module MemoryBugs
               external_id: string,
               subsystem:   string,
               priority:    string,
-              serverty:    string,
               version:     string,
               type:        string,
               status:      string,

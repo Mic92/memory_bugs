@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <title>MySQL Bugs: #2: Does not make Toast</title>
+ <link rel="shortcut icon" href="/favicon.ico" />
+ <link rel="stylesheet" type="text/css" media="screen" href="/static/screen.css" />
+ <link rel="stylesheet" type="text/css" href="/static/chosen/chosen.css" />
+ <script type="text/javascript" src="/static/prototype.js"></script>
+ <script type="text/javascript" src="/static/chosen/event.simulate.js"></script>
+ <script type="text/javascript" src="/static/scriptaculous.js?load=builder,effects,dragdrop,controls,slider"></script>
+ <link rel="stylesheet" type="text/css" media="screen" href="/static/calendar-blue.css" />
+ <script type="text/javascript" src="/static/calendar.js"></script>
+ <script type="text/javascript" src="/static/calendar-en.js"></script>
+ <script type="text/javascript" src="/static/calendar-setup.js"></script>
+</head>
+
+<body class="dev bugs">
+<div id="header">
+ <div id="logo"><a href="http://dev.mysql.com/"><img src="/images/mysql_100x52-64.gif" width="100" height="52" border="0" alt="MySQL" /></a></div>
+ <div id="searchandlogin">
+  <div id="searchbox">
+   <form action="/search.php" method="get">
+    <input class="frm" type="text" name="search_for" size="20" maxlength="255" />
+    <input class="submit2" type="submit" value="Search" />
+   </form>
+  </div>
+  <div id="login">
+
+   <p class="s"><a href="https://dev.mysql.com/auth/login/?dest=http%3A%2F%2Fbugs.mysql.com%2Fbug.php%3Fid%3D2">Login</a> / 
+   <a href="https://dev.mysql.com/auth/register/">Register</a></p>
+  </div>
+ </div>
+</div>
+<div id="nav">
+ <ul>
+  <li><a href="http://dev.mysql.com/">Developer Zone</a></li>
+  <li><a href="/">Bugs Home</a></li>
+   <li><a href="/report.php">Report a bug</a></li>
+  <li><a href="/bugstats.php">Statistics</a></li>
+  <li><a href="/search.php">Advanced search</a></li>
+  <li><a href="/search-saved.php">Saved searches</a></li>
+  <li><a href="/tags.php">Tags</a></li>
+ </ul>
+</div>
+
+<br clear="both" />
+
+<div id="content">
+<table id="bugheader" style="width: 100%">
+ <tr id="title">
+  <th>Bug&nbsp;#2</th>
+  <td colspan="3">Does not make Toast</td>
+ </tr>
+ <tr>
+  <th>Submitted:</th> <td>12 Sep 2002 5:26</td>
+  <th>Modified:</th> <td>15 Jun 22:03</td>
+ </tr>
+ <tr>
+  <th>Reporter:</th>
+  <td>
+<a href="/search.php?cmd=display&status=Active&reporter=11190">Mark Matthews</a>
+  </td>
+  <th>Email Updates:</th>
+  <td>
+    <form style="margin:0px" method="get" action="https://dev.mysql.com/auth/login/">
+    <input type="hidden" name="dest" value="http://bugs.mysql.com/sub.php?action=Subscribe&id=2" />
+    <input type="submit" name="action" value="Subscribe" />    </form>
+  </td>
+ </tr>
+ <tr>
+  <th>Status:</th>
+  <td>
+  Closed  </td>
+  <th>Impact on me:</th>
+  <td>
+    <form style="margin:0px" method="get" action="https://dev.mysql.com/auth/login/">
+    <input type="hidden" name="dest" value="http://bugs.mysql.com/impact.php?action=&id=2" />
+    None&nbsp;<input type="submit" name="action" value="Affects Me" />    </form>
+  </td>
+ </tr>
+ <tr>
+  <th>Category:</th><td>Connector / J</td>
+  <th>Severity:</th><td>S3 (Non-critical)</td>
+ </tr>
+ <tr>
+  <th>Version:</th><td>3.0.0</td>
+  <th>OS:</th><td>Microsoft Windows (Windows and Others))</td>
+ </tr>
+ <tr>
+  <th>Assigned to:</th>
+  <td>
+  </td>
+  <th>Target Version:</th><td>TBD</td>
+ </tr>
+</table>
+
+<ul id="controls">
+<li class=" active">View</li>
+<li class=""><a href="/bug.php?id=2&amp;edit=3">Add Comment</a></li>
+<li class=""><a href="/bug.php?id=2&amp;files=1">Files</a></li>
+<li class=""><a href="/bug.php?id=2&amp;edit=1">Developer</a></li>
+<li class=""><a href="/bug.php?id=2&amp;edit=2">Edit Submission</a></li>
+<li class=""><a href="/bug.php?id=2&amp;log=1">View Progress Log</a></li>
+<li class=""><a href="/bug.php?id=2&amp;contribs=1">Contributions</a></li>
+</ul>
+<br clear="all" />
+ <div id="cmain"
+      class="comment">
+  <div class="header">
+   [12 Sep 2002 5:26]
+   Mark Matthews     </div>
+  <pre class="note"><strong>Description:</strong>
+Other JDBC drivers I have used make toast for breakfast.
+
+MySQL Connector/J doesn't make toast, it can only pour a bowl of froot loops.
+
+When I ask it to make toast, the &quot;NoToast&quot; exception is thrown. I think you should look into this.
+
+<strong>How to repeat:</strong></pre>
+ </div>
+ <div id="c2"
+      class="comment">
+  <div class="header">
+   [12 Sep 2002 5:31]
+   Mark Matthews     </div>
+  <pre class="note">Thank you for taking the time to write to us, but this is not
+a bug. Please double-check the documentation available at
+http://www.mysql.com/documentation/ and the instructions on
+how to report a bug at <a href="http://bugs.mysql.com/how-to-report.php">http://bugs.mysql.com/how-to-report.php</a>
+
+This is as expected. MySQL Connector/J does not make toast. I don\'t think it makes froot loops either (will have to check).
+
+I believe you should look into a device called a \&quot;toaster\&quot; to make your toast.
+
+Of course if you want to sponsor the \&quot;toast\&quot; feature, we would be glad to implement it for you.</pre>
+ </div>
+ <div id="c35977"
+      class="comment">
+  <div class="header">
+   [18 Aug 2005 18:05]
+   mark jordan     </div>
+  <pre class="note">my PS2 makes toast ... it even looks like a toaster.
+
+;-D</pre>
+ </div>
+ <div id="c260578"
+      class="comment">
+  <div class="header">
+   [3 Nov 2009 0:29]
+   Omer Barnir     </div>
+  <pre class="note">This is a 2nd curl test</pre>
+ </div>
+ <div id="c377521"
+      class="comment">
+  <div class="header">
+   [31 Jan 2012 20:27]
+   Paul Dubois     </div>
+  <pre class="note">This report is almost 10 years old now and C/J *still* doesn't make toast? Sheesh.</pre>
+ </div>
+ <div id="c377549"
+      class="comment">
+  <div class="header">
+   [1 Feb 2012 7:46]
+   Shane Bester     </div>
+  <pre class="note">i thought it's a server bug.  if the server exported a menu we could wish for breakfast in bed.</pre>
+ </div>
+ <div id="f18074"
+      class="comment">
+  <div class="header">
+   [22 Feb 2012 23:49]
+   Omer Barnir     </div>
+  <pre class="note">File upload test<br /><br />Attachment: <a href="/file.php?id=18074&bug_id=2">test_file.txt</a> (text/plain), 21 bytes.</p></pre>
+ </div>
+ <div id="c388886"
+      class="comment">
+  <div class="header">
+   [12 Sep 2012 13:06]
+   Harald Stowasser     </div>
+  <pre class="note">Happy Birthday Bug!</pre>
+ </div>
+ <div id="c398732"
+      class="comment">
+  <div class="header">
+   [25 Apr 2013 3:06]
+   Omer Barnir     </div>
+  <pre class="note">test_xyz</pre>
+ </div>
+ <div id="c399905"
+      class="comment">
+  <div class="header">
+   [26 May 2013 16:22]
+   Omer Barnir     </div>
+  <pre class="note">Posted by developer:
+ 
+Test posting after bug fix</pre>
+ </div>
+ <div id="c405071"
+      class="comment">
+  <div class="header">
+   [12 Sep 2013 13:55]
+   Carsten Segieth     </div>
+  <pre class="note">11 years now without toast ... happy birthday bug#2!</pre>
+ </div>
+ <div id="c405676"
+      class="comment">
+  <div class="header">
+   [27 Sep 2013 19:48]
+   Omer Barnir     </div>
+  <pre class="note">Posted by developer:
+ 
+This is a test</pre>
+ </div>
+ <div id="c409186"
+      class="comment">
+  <div class="header">
+   [28 Dec 2013 19:14]
+   Omer Barnir     </div>
+  <pre class="note">Posted by developer:
+ 
+This is a test - please ignore</pre>
+ </div>
+ <div id="c425356"
+      class="comment">
+  <div class="header">
+   [12 Jan 13:33]
+   Vladislav Safronov     </div>
+  <pre class="note">the best bug ever.</pre>
+ </div>
+ <div id="c429522"
+      class="comment">
+  <div class="header">
+   [13 Apr 10:46]
+   Vlad Safronov     </div>
+  <pre class="note">test</pre>
+ </div>
+ <div id="c430633"
+      class="comment">
+  <div class="header">
+   [12 May 10:49]
+   Vladislav Safronov     </div>
+  <pre class="note">test</pre>
+ </div>
+ <div id="c431800"
+      class="comment">
+  <div class="header">
+   [15 Jun 22:03]
+   Daniel So     </div>
+  <pre class="note">Added the following entry to the Connector/J version who-knows-what for this
+historical Bug#2, which was a test and was supposed to be ignored:
+
+&quot;Connector/J did not make toast. This was due to the missing of the Toaster
+class, which this fix has added. However, the class is only accessible when a
+user is extremely hungry. If Connector/J still does not make toasts for you,
+it is only because you are not hungry enough.&quot;</pre>
+ </div>
+ <div id="c433055"
+      class="comment">
+  <div class="header">
+   [17 Jul 6:34]
+   Jon Stephens     </div>
+  <pre class="note">Noted in the docs in response to customer issue:
+
+&quot;The Toaster class must be initialised by calling plug_in(). Otherwise, instances can be created and their toast() methods invoked as normal, but getColour() in such cases continues to return CJ_TOAST_CLR_WHITE without throwing any errors.&quot;
+
+This update has been committed to our documentation repository and should appear in the published docs online very soon.</pre>
+ </div>
+ <div id="c438428"
+      class="comment">
+  <div class="header">
+   [25 Nov 16:11]
+   Mathew Beane     </div>
+  <pre class="note">This actually has been solved finally!
+<a href="https://www.percona.com/blog/2015/11/25/smallest-mysql-server-world-60-can-even-make-toast-fixing-mysql-bug-2/">https://www.percona.com/blog/2015/11/25/smallest-mysql-server-world-60-can-even-make-toast...</a></pre>
+ </div>
+ <div id="c438439"
+      class="comment">
+  <div class="header">
+   [25 Nov 21:18]
+   Federico Razzoli     </div>
+  <pre class="note">I tried to make a toast using a stored procedure but, as I mentioned several time, current MySQL implementation of SP is too limited and slow. I worked hard for a month, and now, even when the procedure doesn't fail, it takes several hours to make a complete toast. What's worst is that there is no way to return it to the caller (just like cursors), so it remains in memory and is eventually deleted.
+
+I hope to see improvements in a future MySQL version.</pre>
+ </div>
+</div>
+<script src="/static/chosen/chosen.proto.js" type="text/javascript"></script>
+<script src="/static/misc.js" type="text/javascript"></script>
+<script type="text/javascript">
+  document.observe('dom:loaded', function(evt) {
+    var config = {
+      '.chzn-select'           : {},
+      '.chzn-select-excl'      : {},
+      '.chzn-select-max1'      : {max_selected_options:1},
+      '.chzn-select-deselect'  : {allow_single_deselect:true},
+      '.chzn-select-no-single' : {disable_search_threshold:10},
+      '.chzn-select-no-results': {no_results_text: "Oops, nothing found!"},
+      '.chzn-select-width'     : {width: "95%"}
+    }
+    var results = [];
+    for (var selector in config) {
+      var elements = $$(selector);
+      for (var i = 0; i < elements.length; i++) {
+        results.push(new Chosen(elements[i],config[selector]));
+      }
+    }
+
+    // initialize (store initial state) selects with exclusive options
+    var elements = $$('.chzn-select-excl');
+    for (var i = 0; i < elements.length; i++) {
+      my_init_select(elements[i]);
+    }
+    
+    return results;
+  });
+</script>
+<div id="footer">
+ <ul style="float: right; list-style: none">
+  <li><a href="http://www.mysql.com/about/legal/">Legal Policies</a></li>
+  <li><a href="http://www.oracle.com/us/legal/privacy/index.htm">Your Privacy Rights</a></li>
+  <li><a href="http://www.oracle.com/html/terms.html">Terms of Use</a></li>
+  <li><a href="http://dev.mysql.com/contact/">Contact Us</a></li>
+ </ul>
+ <br class="clear" />
+ <p>Portions of this website are <a href="http://www.php.net/copyright.php">copyright &copy; 2001, 2002 The PHP Group</a></p>
+ <p style="float: right">
+Page generated in 0.197 sec. using MySQL 5.6.25-enterprise-commercial-advanced-log </p>
+ <br class="clear" />
+ <br style="line-height: 8px;" />
+ <p style="float: left">Content reproduced on this site is the property of the
+  respective copyright holders.<br />It is not reviewed in advance
+  by Oracle and does not necessarily represent the opinion of
+  Oracle or any other party.</p>
+ <p style="float: right"><a href="http://www.oracle.com/"><img src="/images/logo-oracle-red-91x22.gif" alt="Oracle" width="91" height="22" /></a>&nbsp;&nbsp;&copy; 2015, Oracle Corporation and/or its affiliates</p>
+</div>
+<!-- script type="text/javascript" src="http://www.mysql.com/common/js/s_code_remote.js"></script -->
+</body>
+</html>

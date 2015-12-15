@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+ <head>
+  <title>BUG #13789: pg_admin produces table definitiona instead of a view</title>
+  <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8" />
+ 
+  <meta name="copyright" content="The PostgreSQL Global Development Group" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="alternate" type="application/rss+xml" title="PostgreSQL News" href="http://www.postgresql.org/news.rss" />
+  <link rel="alternate" type="application/rss+xml" title="PostgreSQL Events" href="http://www.postgresql.org/events.rss" />
+  <link rel="stylesheet" type="text/css" media="screen" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/smoothness/jquery-ui.css" />
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/media-archives/js/jquery/jquery.ui.selectmenu.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="/media-archives/css/jquery/jquery.ui.selectmenu.css" />
+  <style type="text/css" media="screen">@import url("/media-archives/css/archives.css");</style>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-1345454-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+<meta name="robots" content="noindex" />
+<script type="text/javascript">
+function load() {
+   if (document.location.href.indexOf('#') < 0) {
+      document.location.href = document.location.href + '#' + '20151201213353.2771.86443@wrigleys.postgresql.org';
+   }
+}
+window.onload = load;
+</script>
+
+ </head>
+ <body>
+  <div id="pgContainerWrap">
+   <div id="pgContainer">
+    <span class="txtOffScreen"><a href="#pgContent" title="Skip site navigation" accesskey="1">Skip site navigation</a> (1)</span>
+    <span class="txtOffScreen"><a href="#pgContentWrap" title="Skip section navigation" accesskey="2">Skip section navigation</a> (2)</span>
+    <div id="pgHeaderContainer">
+     <div id="pgSearch">
+      <form method="get" action="http://www.postgresql.org/search/">
+       <div>
+        <h2 class="pgBlockHide"><label for="q">Search</label></h2>
+        <input id="q" name="q" type="text" size="20" maxlength="255" onfocus="if( this.value==this.defaultValue ) this.value='';" value="Search" accesskey="s" /><input name="a" type="hidden" value="1"/><input id="submit" name="submit" type="submit" value="Search" />
+       </div>
+      </form>
+      <h2 class="pgBlockHide">Peripheral Links</h2>
+      <div id="pgSearchNav">
+       <ul id="pgSearchNavList">
+        <li>
+          <a href="/about/donate">Donate</a>
+        </li>
+        <li>
+          <a href="/about/contact">Contact</a>
+        </li>
+       </ul>
+      </div>
+     </div>
+	 <div id="pgHeader">
+	  <div id="pgHeaderLogoLeft">
+	   <a href="http://www.postgresql.org/"><img alt="PostgreSQL" height="80" width="230" src="/media/img/layout/hdr_left.png" /></a>
+	  </div>
+	  <div id="pgHeaderLogoRight">
+	   <a href="/"><img width="210" height="80" alt="The world's most advanced open source database." src="/media/img/layout/hdr_right.png" /></a>
+	  </div>
+	 </div> <!-- pgHeader -->
+
+	 <div id="pgTopNav">
+	  <div id="pgTopNavLeft"><img width="7" height="23" alt="" src="/media/img/layout/nav_lft.png" /></div>
+	  <div id="pgTopNavRight"><img width="7" height="23" alt="" src="/media/img/layout/nav_rgt.png" /></div>
+	  <ul id="pgTopNavList">
+	   <li><a href="http://www.postgresql.org/" title="Home">Home</a></li>
+	   <li><a href="http://www.postgresql.org/about" title="About">About</a></li>
+	   <li><a href="http://www.postgresql.org/download" title="Download">Download</a></li>
+	   <li><a href="http://www.postgresql.org/docs" title="Documentation">Documentation</a></li>
+	   <li><a href="http://www.postgresql.org/community" title="Community">Community</a></li>
+	   <li><a href="http://www.postgresql.org/developer" title="Developers">Developers</a></li>
+	   <li><a href="http://www.postgresql.org/support" title="Support">Support</a></li>
+	   <li><a href="http://www.postgresql.org/account" title="Your account">Your account</a></li>
+	  </ul>
+	 </div> <!-- pgTopNav -->
+	</div> <!-- pgHeaderContainer -->
+	<div id="pgContent">
+         <div id="pgSideWrap">
+          <div id="pgSideNav">
+           <ul>
+	     <li><a href="http://www.postgresql.org/community/">Community</a></li>
+	     <li><a href="http://www.postgresql.org/community/contributors/">Contributors</a></li>
+	     <li><a href="/list/">Mailing Lists</a>
+	       <ul>
+		 <li><a href="/community/lists/subscribe/">Subscribe</a></li>
+
+                <li><a href="/list/group/2/">User lists</a>
+
+	        </li>
+
+                <li><a href="/list/group/1/">Developer lists</a>
+
+	        </li>
+
+                <li><a href="/list/group/4/">Regional lists</a>
+
+	        </li>
+
+                <li><a href="/list/group/8/">Associations</a>
+
+	        </li>
+
+                <li><a href="/list/group/6/">User groups</a>
+
+	        </li>
+
+                <li><a href="/list/group/5/">Project lists</a>
+
+	        </li>
+
+                <li><a href="/list/group/7/">Inactive lists</a>
+
+	        </li>
+
+               </ul>
+	     </li>
+	     <li><a href="http://www.postgresql.org/community/irc">IRC</a></li>
+	     <li><a href="http://www.postgresql.org/community/user-groups/">Local User Groups</a></li>
+	     <li><a href="http://www.postgresql.org/about/users">Featured Users</a></li>
+	     <li><a href="http://www.postgresql.org/community/international">International Sites</a></li>
+	     <li><a href="http://www.postgresql.org/community/propaganda">Propaganda</a></li>
+	     <li><a href="http://www.postgresql.org/community/resources">Resources</a></li>
+	     <li><a href="http://www.postgresql.org/community/weeklynews/">Weekly News</a></li>
+           </ul>
+          </div>
+        </div> <!-- pgSideWrap -->
+        <div id="pgContentWrap">
+
+<h2>BUG #13789: pg_admin produces table definitiona instead of a view</h2>
+
+<div class="msgwrap">
+<a name="20151201213353.2771.86443@wrigleys.postgresql.org"></a>
+<table class="message">
+ <tr>
+  <th>From:</th>
+  <td>amsl(dot)sm(at)gmail(dot)com</td>
+ </tr>
+ <tr>
+  <th>To:</th>
+  <td>pgsql-bugs(at)postgresql(dot)org</td>
+ </tr>
+
+ <tr>
+  <th>Subject:</th>
+  <td>BUG #13789: pg_admin produces table definitiona instead of a view</td>
+ </tr>
+ <tr>
+  <th>Date:</th>
+  <td>2015-12-01 21:33:53</td>
+ </tr>
+ <tr>
+  <th>Message-ID:</th>
+  <td><a href="/message-id/20151201213353.2771.86443@wrigleys.postgresql.org">20151201213353.2771.86443@wrigleys.postgresql.org</a> (view <a href="/message-id/raw/20151201213353.2771.86443@wrigleys.postgresql.org">raw</a>)</td>
+ </tr>
+</table>
+<div class="bodywrapper">
+
+<pre>The following bug has been logged on the website:
+
+Bug reference:      13789
+Logged by:          Alex Maslennikov
+Email address:      amsl(dot)sm(at)gmail(dot)com
+PostgreSQL version: 9.4.5
+Operating system:   Windows 7
+Description:        
+
+I have a view defined with the following sql statement:
+
+CREATE OR REPLACE VIEW my_view AS 
+(
+	select 	s.id as start_id
+	from start s
+	group by s.id
+	order by start_date desc
+);
+
+When pg_admin exports this view it outputs it as as table not view:
+
+CREATE TABLE my_view (
+    start_id integer
+);
+
+Removing &quot;order by&quot; from view fixes the problem, but &quot;order by&quot; is a valid
+syntax for a view.
+
+
+</pre>
+
+
+</div>
+
+
+</div>
+
+<div class="msgwrap">
+<a name="14692.1449067373@sss.pgh.pa.us"></a>
+<table class="message">
+ <tr>
+  <th>From:</th>
+  <td>Tom Lane &lt;tgl(at)sss(dot)pgh(dot)pa(dot)us&gt;</td>
+ </tr>
+ <tr>
+  <th>To:</th>
+  <td>amsl(dot)sm(at)gmail(dot)com</td>
+ </tr>
+
+ <tr>
+  <th>Cc:</th>
+  <td>pgsql-bugs(at)postgresql(dot)org</td>
+ </tr>
+
+ <tr>
+  <th>Subject:</th>
+  <td>Re: BUG #13789: pg_admin produces table definitiona instead of a view</td>
+ </tr>
+ <tr>
+  <th>Date:</th>
+  <td>2015-12-02 14:42:53</td>
+ </tr>
+ <tr>
+  <th>Message-ID:</th>
+  <td><a href="/message-id/14692.1449067373@sss.pgh.pa.us">14692.1449067373@sss.pgh.pa.us</a> (view <a href="/message-id/raw/14692.1449067373@sss.pgh.pa.us">raw</a>)</td>
+ </tr>
+</table>
+<div class="bodywrapper">
+
+<pre>amsl(dot)sm(at)gmail(dot)com writes:
+&gt; I have a view defined with the following sql statement:
+
+&gt; CREATE OR REPLACE VIEW my_view AS 
+&gt; (
+&gt; 	select 	s.id as start_id
+&gt; 	from start s
+&gt; 	group by s.id
+&gt; 	order by start_date desc
+&gt; );
+
+Note that this view definition isn&#39;t even legal unless start.id is
+a primary key, otherwise you get
+
+ERROR:  column &quot;s.start_date&quot; must appear in the GROUP BY clause or be used in an aggregate function
+
+&gt; When pg_admin exports this view it outputs it as as table not view:
+
+&gt; CREATE TABLE my_view (
+&gt;     start_id integer
+&gt; );
+
+This is not a bug; if you look further down you&#39;ll find something like
+
+CREATE RULE &quot;_RETURN&quot; AS
+    ON SELECT TO my_view DO INSTEAD  SELECT s.id AS start_id
+   FROM start s
+  GROUP BY s.id
+  ORDER BY s.start_date DESC;
+
+which converts the table to a view (admittedly in a not-very-obvious way).
+Because of the dependency on start&#39;s primary key, the view can&#39;t simply
+be defined up at the top of the dump.  This is how pg_dump chooses to
+break the circularity.
+
+			regards, tom lane
+
+
+</pre>
+
+
+</div>
+
+
+</div>
+
+<div class="msgwrap">
+<a name="CAEt+eeurWBO5jE4Yzsi2G6hp50Yp1-NcLH1aU5=q7Lt-c2FP_A@mail.gmail.com"></a>
+<table class="message">
+ <tr>
+  <th>From:</th>
+  <td>Alex Maslennikov &lt;amaslennikov(at)gmail(dot)com&gt;</td>
+ </tr>
+ <tr>
+  <th>To:</th>
+  <td>Tom Lane &lt;tgl(at)sss(dot)pgh(dot)pa(dot)us&gt;</td>
+ </tr>
+
+ <tr>
+  <th>Cc:</th>
+  <td>Alex Maslennikov &lt;amsl(dot)sm(at)gmail(dot)com&gt;, pgsql-bugs(at)postgresql(dot)org</td>
+ </tr>
+
+ <tr>
+  <th>Subject:</th>
+  <td>Re: BUG #13789: pg_admin produces table definitiona instead of
+ a view</td>
+ </tr>
+ <tr>
+  <th>Date:</th>
+  <td>2015-12-02 15:50:50</td>
+ </tr>
+ <tr>
+  <th>Message-ID:</th>
+  <td><a href="/message-id/CAEt+eeurWBO5jE4Yzsi2G6hp50Yp1-NcLH1aU5=q7Lt-c2FP_A@mail.gmail.com">CAEt+eeurWBO5jE4Yzsi2G6hp50Yp1-NcLH1aU5=q7Lt-c2FP_A@mail.gmail.com</a> (view <a href="/message-id/raw/CAEt+eeurWBO5jE4Yzsi2G6hp50Yp1-NcLH1aU5=q7Lt-c2FP_A@mail.gmail.com">raw</a>)</td>
+ </tr>
+</table>
+<div class="bodywrapper">
+
+<pre>Tom,
+
+Thanks for reply. I only noticed this during DB restore process where I was
+getting an error on the line &quot;CREATE TABLE my_view ...&quot;. From what I see,
+this view was never restored.
+
+thanks,
+Alex
+
+On Wed, Dec 2, 2015 at 9:42 AM, Tom Lane &lt;tgl(at)sss(dot)pgh(dot)pa(dot)us&gt; wrote:
+
+&gt; amsl(dot)sm(at)gmail(dot)com writes:
+&gt; &gt; I have a view defined with the following sql statement:
+&gt;
+&gt; &gt; CREATE OR REPLACE VIEW my_view AS
+&gt; &gt; (
+&gt; &gt;       select  s.id as start_id
+&gt; &gt;       from start s
+&gt; &gt;       group by s.id
+&gt; &gt;       order by start_date desc
+&gt; &gt; );
+&gt;
+&gt; Note that this view definition isn&#39;t even legal unless start.id is
+&gt; a primary key, otherwise you get
+&gt;
+&gt; ERROR:  column &quot;s.start_date&quot; must appear in the GROUP BY clause or be
+&gt; used in an aggregate function
+&gt;
+&gt; &gt; When pg_admin exports this view it outputs it as as table not view:
+&gt;
+&gt; &gt; CREATE TABLE my_view (
+&gt; &gt;     start_id integer
+&gt; &gt; );
+&gt;
+&gt; This is not a bug; if you look further down you&#39;ll find something like
+&gt;
+&gt; CREATE RULE &quot;_RETURN&quot; AS
+&gt;     ON SELECT TO my_view DO INSTEAD  SELECT s.id AS start_id
+&gt;    FROM start s
+&gt;   GROUP BY s.id
+&gt;   ORDER BY s.start_date DESC;
+&gt;
+&gt; which converts the table to a view (admittedly in a not-very-obvious way).
+&gt; Because of the dependency on start&#39;s primary key, the view can&#39;t simply
+&gt; be defined up at the top of the dump.  This is how pg_dump chooses to
+&gt; break the circularity.
+&gt;
+&gt;                         regards, tom lane
+&gt;
+</pre>
+
+
+</div>
+
+
+</div>
+
+
+        </div> <!-- pgContentWrap-->
+     <br class="pgClearBoth" />
+    </div> <!-- pgContent -->
+	<div id="pgFooter">
+         <a class="navFooter" href="http://www.postgresql.org/about/privacypolicy">Privacy Policy</a> |
+         <a class="navFooter" href="http://www.postgresql.org/about/">About PostgreSQL</a><br/>
+	 Copyright &copy; 1996-2015 The PostgreSQL Global Development Group
+	</div> <!-- pgFooter -->
+   </div>
+  </div> <!-- pgContainerWrap -->
+ </body>
+</html>

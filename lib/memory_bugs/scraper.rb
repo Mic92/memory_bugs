@@ -9,7 +9,7 @@ module MemoryBugs
     end
 
     def self.register(site)
-      DEFAULT_SCRAPER[site_name(site)] = site
+      DEFAULT_SCRAPER[site_name(site)] = site.new
     end
 
     DEFAULT_SCRAPER = {}
@@ -23,12 +23,12 @@ module MemoryBugs
       k = MemoryBugs::Models::TicketPage
       updates = []
       MemoryBugs::Elasticsearch.scroll(k) do |page|
-        scraper = @scrapers[page.site].new
+        scraper = @scrapers[page.site]
         if scraper.nil?
           MemoryBugs::Logger.warn("no scraper found for #{page.site}")
           next
         end
-        tickets = scraper.process(page)
+        tickets = scraper.process(page.content)
         tickets.each do |ticket|
           ticket.url = page.url
           ticket.site = page.site

@@ -28,8 +28,8 @@ module MemoryBugs
         end
       end
 
-      def process(page)
-        doc = Nokogiri::HTML(page.content)
+      def process(content)
+        doc = Nokogiri::HTML(content)
         ticket = MemoryBugs::Models::Ticket.new
 
         doc.css(".content table tr").each do |row|
@@ -38,7 +38,7 @@ module MemoryBugs
           assign_field(ticket, label, value)
         end
         last_row = doc.css(".content table tr:last")
-        value = last_row.css(".tktDspValue").text.strip
+        value = Helpers::clean_text(last_row.css(".tktDspValue").text)
         ticket.description = value
         match = /added on (?<date>.+):\n/.match(value)
         ticket.created_at = Date.parse(match[:date])
