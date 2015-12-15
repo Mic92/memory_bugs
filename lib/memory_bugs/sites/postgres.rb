@@ -20,11 +20,11 @@ module MemoryBugs
             if i > self.class.page_limit
               return true
             end
-
             yield "http://www.postgresql.org#{link["href"]}"
           end
         else
           doc.css("#pgContentWrap ul li a").each do |link|
+            next unless link.text =~ /^BUG #/
             ticket_queue.push(ticket_url(File.basename(link["href"])))
           end
         end

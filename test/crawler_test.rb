@@ -19,7 +19,7 @@ describe MemoryBugs::Crawler do
   test_site(MemoryBugs::Sites::Sqlite, 389)
   test_site(MemoryBugs::Sites::Redis, 2935)
   test_site(MemoryBugs::Sites::Leveldb, 322)
-  test_site(MemoryBugs::Sites::Postgres.with_page_limit(2), 497)
+  test_site(MemoryBugs::Sites::Postgres.with_page_limit(2), 91)
   test_site(MemoryBugs::Sites::Mysql.with_page_limit(2), 3000)
   test_site(MemoryBugs::Sites::Mongodb.with_page_limit(2), 2000)
   test_site(MemoryBugs::Sites::Mariadb.with_page_limit(2), 1000)
