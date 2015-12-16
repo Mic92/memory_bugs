@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'memory_bugs'
 
 def test_scraper(scraper_kls)
   describe scraper_kls do
@@ -14,14 +15,14 @@ end
 describe MemoryBugs::Scraper do
   describe MemoryBugs::Scrapers::Sqlite do
     before do
-      @crawler = MemoryBugs::Crawler.new(sites: [MemoryBugs::Sites::Sqlite])
+      @crawler = MemoryBugs::Crawler.new(sites: [MemoryBugs::Sites::Sqlite], count: 2)
       MemoryBugs::Elasticsearch.delete_index rescue 0
       MemoryBugs::Elasticsearch.create_mapping
 
       VCR.use_cassette("typhoeus_queue") do
         @crawler.find_tickets
         @site_name = "sqlite"
-        @crawler.ticket_queues[@site_name] = @crawler.ticket_queues[@site_name].take(3)
+        MemoryBugs::Elasticsearch.refresh
         @crawler.download_tickets
         MemoryBugs::Elasticsearch.refresh
 
@@ -32,8 +33,7 @@ describe MemoryBugs::Scraper do
 
     it "should empty the queue" do
       MemoryBugs::Elasticsearch.refresh
-      MemoryBugs::Elasticsearch.count.must_be :==, 6
-      @crawler.ticket_queues.must_be_empty
+      MemoryBugs::Elasticsearch.count.must_be :==, 4
     end
   end
 

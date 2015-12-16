@@ -26,12 +26,11 @@ module MemoryBugs
         "#{site}/browse/#{key}"
       end
 
-      def process(url, content, ticket_queue, &blk)
+      def process(url, content, ticket_urls, &blk)
         tickets = JSON.parse(content)["issues"]
 
         tickets.each do |ticket|
-          request = Typhoeus::Request.new(ticket_url(ticket["key"]))
-          ticket_queue.push(request)
+          ticket_urls.push(ticket_url(ticket["key"]))
         end
 
         paginate(per_page, &blk) if url == seed_url

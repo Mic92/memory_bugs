@@ -12,13 +12,12 @@ module MemoryBugs
         "https://www.sqlite.org/src/tktview?name=#{id}"
       end
 
-      def process(url, content, ticket_queue)
+      def process(url, content, ticket_urls)
         CSV.parse(content,
                   col_sep: "\t",
                   quote_char: "\0",
                   headers: :first_row) do |row|
-          request = Typhoeus::Request.new(ticket_url(row["#"]))
-          ticket_queue.push(request)
+          ticket_urls.push(ticket_url(row["#"]))
         end
       end
     end

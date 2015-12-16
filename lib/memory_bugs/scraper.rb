@@ -39,7 +39,9 @@ module MemoryBugs
           updates.clear
         end
       end
-      MemoryBugs::Elasticsearch.bulk(updates) unless updates.empty?
+      unless updates.empty?
+        MemoryBugs::Elasticsearch.bulk(updates)
+      end
     end
   end
 end

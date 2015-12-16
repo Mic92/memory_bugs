@@ -16,35 +16,50 @@ module MemoryBugs
 
     DEFAULT_CRAWLER = Set.new
 
-    def initialize(sites: DEFAULT_CRAWLER)
-      @ticket_queues = {}
+    def initialize(sites: DEFAULT_CRAWLER, count: nil)
       @sites = sites
+      @downloaded_pages = []
+      @count = count
     end
-
-    attr_reader :ticket_queues
 
     def site_name(site)
       site.name.split("::").last.downcase
     end
 
+    def put_urls(urls)
+      if @count
+        return if @count <= 0
+        if urls.size >= @count
+          urls = urls.take(@count)
+        end
+        @count -= urls.size
+      end
+
+      pages = urls.map do |u|
+        Models::TicketPage.new(url: u)
+      end
+      MemoryBugs::Elasticsearch.bulk(pages)
+    end
+
     def find_tickets
       @sites.each do |klass|
         site = klass.new
-        queue = []
+        ticket_urls = []
 
-        @ticket_queues[site_name(klass)] = queue
         next_urls = [site.seed_url]
-        seen = Set.new
         until next_urls.empty?
           url = next_urls.pop
-          seen << url
-          # TODO replace with hydra if it is bottle neck
           document = download(url)
-          site.process(url, document, queue) do |next_url|
-
-            next if seen.include?(next_url)
+          site.process(url, document, ticket_urls) do |next_url|
+            if ticket_urls.size > 1000
+              put_urls(ticket_urls)
+              ticket_urls.clear
+            end
             next_urls << next_url
           end
+        end
+        unless ticket_urls.empty?
+          put_urls(ticket_urls)
         end
       end
     end
@@ -58,7 +73,11 @@ module MemoryBugs
                                       content: resp.body,
                                       created_at: Time.now.utc.iso8601,
                                       url: url.to_s)
-        MemoryBugs::Elasticsearch.create(page)
+        @downloaded_pages.push(page)
+        if @downloaded_pages.size > 1000
+          MemoryBugs::Elasticsearch.bulk(@downloaded_pages)
+          @downloaded_pages.clear
+        end
       elsif resp.timed_out?
         MemoryBugs::Logger.info("Page timed out: '#{url}'")
       elsif resp.code == 0
@@ -71,18 +90,37 @@ module MemoryBugs
     def download_tickets
       hydra = Typhoeus::Hydra.new
       # schedule requests round robbin per site
-      while @ticket_queues.size > 0
-        @ticket_queues.each do |name, queue|
-          if queue.empty?
-            @ticket_queues.delete(name)
-          else
-            req = queue.pop
-            req.on_complete { |resp| handle_download(name, resp) }
-            hydra.queue(req)
-          end
+
+      search = {
+        body: {
+          query: {
+            function_score: {
+              filter: { not: { exists: { field: "content" } } },
+              random_score:  { seed: 11 },
+            }
+          }
+        }
+      }
+
+      queued_requests = 0
+      MemoryBugs::Elasticsearch.scroll(Models::TicketPage,
+                                       search: search) do |page|
+        req = Typhoeus::Request.new(page.url)
+        req.on_complete do |resp|
+          handle_download(page.name, resp)
+        end
+        hydra.queue(req)
+        queued_requests += 1
+        if queued_requests > 1000
+          hydra.run
+          queued_requests = 0
         end
       end
-      hydra.run
+      hydra.run if queued_requests > 0
+      unless @downloaded_pages.empty?
+        MemoryBugs::Elasticsearch.bulk(@downloaded_pages)
+        @downloaded_pages.clear
+      end
     end
 
     def download(url)

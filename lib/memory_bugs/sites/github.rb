@@ -17,13 +17,11 @@ module MemoryBugs
         "https://github.com/#{github_user}/#{repo_name}/issues/#{number}"
       end
 
-      def process(url, content, ticket_queue)
+      def process(url, content, ticket_urls)
         issues = JSON.parse(content)
         number = issues[0]["number"]
-        headers = { "X-GitHub-Media-Type" => "github.v3; param=full; format=json" }
         number.times do |n|
-          request = Typhoeus::Request.new(ticket_url(n + 1), headers: headers)
-          ticket_queue.push(request)
+          ticket_urls.push(ticket_url(n + 1))
         end
       end
     end

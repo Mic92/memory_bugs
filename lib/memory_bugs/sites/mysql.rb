@@ -17,12 +17,11 @@ module MemoryBugs
         "https://bugs.mysql.com/bug.php?id=#{id}"
       end
 
-      def process(url, content, ticket_queue, &blk)
+      def process(url, content, ticket_urls, &blk)
         has_tickets = false
         CSV.parse(content, headers: :first_row) do |row|
           has_tickets = true
-          request = Typhoeus::Request.new(ticket_url(row["ID"]))
-          ticket_queue.push(request)
+          ticket_urls.push(ticket_url(row["ID"]))
         end
 
         paginate(1000, &blk) if url == seed_url

@@ -13,7 +13,7 @@ module MemoryBugs
         "http://www.postgresql.org/message-id/flat/#{message}"
       end
 
-      def process(url, content, ticket_queue)
+      def process(url, content, ticket_urls)
         doc = Nokogiri::HTML(content)
         if url == seed_url
           doc.css("#pgContentWrap ul li a:first-child").each_with_index do |link, i|
@@ -25,7 +25,7 @@ module MemoryBugs
         else
           doc.css("#pgContentWrap ul li a").each do |link|
             next unless link.text =~ /^BUG #/
-            ticket_queue.push(ticket_url(File.basename(link["href"])))
+            ticket_urls.push(ticket_url(File.basename(link["href"])))
           end
         end
 

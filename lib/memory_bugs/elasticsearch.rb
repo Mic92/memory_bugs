@@ -65,27 +65,33 @@ module MemoryBugs
               _index: index_name,
               _type:  object.class.type_name,
               _id: object.id,
-              data: { doc: object, doc_as_upsert: true }
+              data: {
+                doc: object,
+                doc_as_upsert: true
+              }
             }
           }
         end
-        Client.bulk body: updates
+        Client.bulk(body: updates)
       end
 
-      def scroll(klass)
-        response = Client.search index: index_name,
+      def scroll(klass, search: {})
+        args = {
+          index: index_name,
           type: klass.type_name,
           search_type: 'scan',
           scroll: '1m',
           size: 1000
+        }.merge(search)
+        response = Client.search(args)
 
         loop do
-          response = Client.scroll(scroll_id: response['_scroll_id'], scroll: '1m')
-          if response['hits']['hits'].empty?
-            break
-          end
+          response = Client.scroll(scroll_id: response['_scroll_id'],
+                                   scroll: '1m')
+          hits = response['hits']['hits']
+          break if hits.empty?
 
-          response['hits']['hits'].map do |r|
+          hits.map do |r|
             yield klass.new(r['_source'])
           end
         end

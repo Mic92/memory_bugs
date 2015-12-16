@@ -11,10 +11,9 @@ module MemoryBugs
         "https://code.google.com/p/memcached/issues/detail?id=#{id}&can=1&num=1000"
       end
 
-      def process(url, content, ticket_queue)
+      def process(url, content, ticket_urls)
         CSV.parse(content, headers: :first_row) do |row|
-          req = Typhoeus::Request.new(ticket_url(row["ID"]))
-          ticket_queue.push(req)
+          ticket_urls.push(ticket_url(row["ID"]))
         end
       end
     end

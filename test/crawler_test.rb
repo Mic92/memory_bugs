@@ -4,13 +4,16 @@ require 'memory_bugs'
 def test_site(site, queue_size)
   describe site do
     before do
-      @crawler = MemoryBugs::Crawler.new(sites: [site])
+      MemoryBugs::Elasticsearch.delete_index rescue 0
+      MemoryBugs::Elasticsearch.create_mapping
+      @crawler = MemoryBugs::Crawler.new(sites: [site], count: 2)
       @site_name = @crawler.site_name(site)
       VCR.use_cassette(@site_name) { @crawler.find_tickets }
     end
 
     it "should find some tickets" do
-      @crawler.ticket_queues[@site_name].size.must_be :>=, queue_size
+      MemoryBugs::Elasticsearch.refresh
+      MemoryBugs::Elasticsearch.count.must_be :==, 2
     end
   end
 end
