@@ -28,11 +28,11 @@ describe MemoryBugs::Scraper do
 
         @scraper = MemoryBugs::Scraper.new
         @scraper.process_tickets
+        MemoryBugs::Elasticsearch.refresh
       end
     end
 
     it "should empty the queue" do
-      MemoryBugs::Elasticsearch.refresh
       MemoryBugs::Elasticsearch.count.must_be :==, 4
     end
   end
@@ -55,6 +55,8 @@ describe MemoryBugs::Scraper do
 
   # example for Github
   test_scraper(MemoryBugs::Scrapers::Leveldb)
+  # second example for Github
+  test_scraper(MemoryBugs::Scrapers::Redis)
   test_scraper(MemoryBugs::Scrapers::Memcached)
   # example for Jira
   test_scraper(MemoryBugs::Scrapers::Mongodb)

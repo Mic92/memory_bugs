@@ -8,7 +8,8 @@ module MemoryBugs
         when /title/i
           ticket.title = value
         when /status/i
-          ticket.status = value
+          ticket.status = Helpers::clean_text(value.downcase)
+          ticket.status.gsub!(/\n+/, " ")
         when /last modified/i
           ticket.updated_at = Date.parse(value)
         when /type/i
@@ -41,7 +42,11 @@ module MemoryBugs
         value = Helpers::clean_text(last_row.css(".tktDspValue").text)
         ticket.description = value
         match = /added on (?<date>.+):\n/.match(value)
-        ticket.created_at = Date.parse(match[:date])
+        ticket.created_at = if match
+                              match[:date]
+                            else
+                              ticket.updated_at
+                            end
 
         [ticket]
       end

@@ -16,11 +16,12 @@ module MemoryBugs
         {
           type_name => {
             properties: {
-              _all: { enabled: false },
               created_at: { type: 'date' },
-              content: { type: 'string', index: 'no' },
+              content: { type: 'string' },
               site: { type: 'string', index: 'not_analyzed' },
-              url: { type: 'string', index: 'not_analyzed' }
+              url: { type: 'string', index: 'not_analyzed' },
+              scraped: { type: 'boolean' },
+              error_status: { type: 'integer' }
             }
           }
         }

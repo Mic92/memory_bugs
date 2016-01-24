@@ -26,7 +26,7 @@ module MemoryBugs
       site.name.split("::").last.downcase
     end
 
-    def put_urls(urls)
+    def put_urls(site, urls)
       if @count
         return if @count <= 0
         if urls.size >= @count
@@ -36,45 +36,48 @@ module MemoryBugs
       end
 
       pages = urls.map do |u|
-        Models::TicketPage.new(url: u)
+        Models::TicketPage.new(url: u, site: site)
       end
       MemoryBugs::Elasticsearch.bulk(pages)
+    end
+
+    def crawl_url(site, name, url, ticket_urls)
+      document = download(url)
+      site.process(url, document, ticket_urls) do |next_url|
+        if ticket_urls.size > 1000
+          put_urls(name, ticket_urls)
+          ticket_urls.clear
+        end
+        unless crawl_url(site, name, next_url, ticket_urls)
+          break
+        end
+      end
     end
 
     def find_tickets
       @sites.each do |klass|
         site = klass.new
+        name = site_name(klass)
         ticket_urls = []
 
-        next_urls = [site.seed_url]
-        until next_urls.empty?
-          url = next_urls.pop
-          document = download(url)
-          site.process(url, document, ticket_urls) do |next_url|
-            if ticket_urls.size > 1000
-              put_urls(ticket_urls)
-              ticket_urls.clear
-            end
-            next_urls << next_url
-          end
-        end
+        crawl_url(site, name, site.seed_url, ticket_urls)
         unless ticket_urls.empty?
-          put_urls(ticket_urls)
+          put_urls(name, ticket_urls)
         end
       end
     end
 
-    def handle_download(site, resp)
-      url = resp.effective_url
+    def handle_download(site, url, resp)
       if resp.success?
         MemoryBugs::Logger.info("Got page: '#{url}'")
 
         page = Models::TicketPage.new(site: site,
-                                      content: resp.body,
-                                      created_at: Time.now.utc.iso8601,
-                                      url: url.to_s)
+                                      content: resp.body.force_encoding("utf-8"),
+                                      created_at: Time.now.utc,
+                                      url: url,
+                                      scraped: false)
         @downloaded_pages.push(page)
-        if @downloaded_pages.size > 1000
+        if @downloaded_pages.size > 100
           MemoryBugs::Elasticsearch.bulk(@downloaded_pages)
           @downloaded_pages.clear
         end
@@ -83,20 +86,24 @@ module MemoryBugs
       elsif resp.code == 0
         MemoryBugs::Logger.info("Failed to request: '#{url}'")
       else
+        page = Models::TicketPage.new(error_status: resp.code.to_i, url: url)
+        @downloaded_pages.push(page)
         MemoryBugs::Logger.info("Got #{resp.code} for request: '#{url}'")
       end
     end
 
     def download_tickets
-      hydra = Typhoeus::Hydra.new
+      hydra = Typhoeus::Hydra.new(max_concurrency: 20)
       # schedule requests round robbin per site
 
       search = {
         body: {
           query: {
             function_score: {
-              filter: { not: { exists: { field: "content" } } },
-              random_score:  { seed: 11 },
+              filter: { and: [
+                { not: { exists: { field: "content" } } },
+                { not: { exists: { field: "error_status" } } },
+              ]},
             }
           }
         }
@@ -105,9 +112,11 @@ module MemoryBugs
       queued_requests = 0
       MemoryBugs::Elasticsearch.scroll(Models::TicketPage,
                                        search: search) do |page|
-        req = Typhoeus::Request.new(page.url)
+        req = Typhoeus::Request.new(page.url,
+                                    accept_encoding: "gzip",
+                                    headers: { Accept: "text/html" })
         req.on_complete do |resp|
-          handle_download(page.name, resp)
+          handle_download(page.site, page.url, resp)
         end
         hydra.queue(req)
         queued_requests += 1

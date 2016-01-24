@@ -1,0 +1,1132 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="">
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="viewport" content="width=1020">
+    
+    
+    <title>configurable umask for unix socket · Issue #85 · antirez/redis · GitHub</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png">
+    <meta property="fb:app_id" content="1401488693436528">
+
+      <meta content="@github" name="twitter:site" /><meta content="summary" name="twitter:card" /><meta content="configurable umask for unix socket · Issue #85 · antirez/redis" name="twitter:title" /><meta content="The default umask (usually 022) can be overridden by the process starting Redis (e.g. to 000 to allow any user to connect to Redis over its Unix socket), but this also changes the permission mask f..." name="twitter:description" /><meta content="https://avatars3.githubusercontent.com/u/9845?v=3&amp;s=400" name="twitter:image:src" />
+      <meta content="GitHub" property="og:site_name" /><meta content="object" property="og:type" /><meta content="https://avatars3.githubusercontent.com/u/9845?v=3&amp;s=400" property="og:image" /><meta content="configurable umask for unix socket · Issue #85 · antirez/redis" property="og:title" /><meta content="https://github.com/antirez/redis/issues/85" property="og:url" /><meta content="The default umask (usually 022) can be overridden by the process starting Redis (e.g. to 000 to allow any user to connect to Redis over its Unix socket), but this also changes the permission mask f..." property="og:description" />
+      <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
+    <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
+    <link rel="assets" href="https://assets-cdn.github.com/">
+    
+    <meta name="pjax-timeout" content="1000">
+    
+
+    <meta name="msapplication-TileImage" content="/windows-tile.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="selected-link" value="repo_issues" data-pjax-transient>
+
+    <meta name="google-site-verification" content="KT5gs8h0wvaagLKAVWq8bbeNwnZZK1r1XQysX3xurLU">
+    <meta name="google-analytics" content="UA-3769691-2">
+
+<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="8D4C6025:6924:44616134:568A3F3C" name="octolytics-dimension-request_id" />
+<meta content="/&lt;user-name&gt;/&lt;repo-name&gt;/issues/show" data-pjax-transient="true" name="analytics-location" />
+<meta content="Rails, view, issues#show" data-pjax-transient="true" name="analytics-event" />
+
+
+  <meta class="js-ga-set" name="dimension1" content="Logged Out">
+
+
+
+        <meta name="hostname" content="github.com">
+    <meta name="user-login" content="">
+
+        <meta name="expected-hostname" content="github.com">
+
+      <link rel="mask-icon" href="https://assets-cdn.github.com/pinned-octocat.svg" color="#4078c0">
+      <link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
+
+    <meta content="02b711ee74b36e40fcde1a01abcabb41e806c6a0" name="form-nonce" />
+
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github-533f899df1b28bb13a4f60766edadaa22c930270e720f58bdd97ab1fac3a174f.css" media="all" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github2-692b0b1ba861c5b4055d33b157feb7f5b35ce646135cd0db80ce5d0b2293500d.css" media="all" rel="stylesheet" />
+    
+    
+
+
+    <meta http-equiv="x-pjax-version" content="43506fe51b2c726e05d5d7ecaa73d097">
+
+      
+  <meta name="description" content="redis - Redis is an in-memory database that persists on disk. The data model is key-value, but many different kind of values are supported: Strings, Lists, Sets, Sorted Sets, Hashes, HyperLogLogs, Bitmaps.">
+  <meta name="go-import" content="github.com/antirez/redis git https://github.com/antirez/redis.git">
+
+  <meta content="65632" name="octolytics-dimension-user_id" /><meta content="antirez" name="octolytics-dimension-user_login" /><meta content="156018" name="octolytics-dimension-repository_id" /><meta content="antirez/redis" name="octolytics-dimension-repository_nwo" /><meta content="true" name="octolytics-dimension-repository_public" /><meta content="false" name="octolytics-dimension-repository_is_fork" /><meta content="156018" name="octolytics-dimension-repository_network_root_id" /><meta content="antirez/redis" name="octolytics-dimension-repository_network_root_nwo" />
+  <link href="https://github.com/antirez/redis/commits/unstable.atom" rel="alternate" title="Recent Commits to redis:unstable" type="application/atom+xml">
+
+  </head>
+
+
+  <body class="logged_out   env-production  vis-public">
+    <a href="#start-of-content" tabindex="1" class="accessibility-aid js-skip-to-content">Skip to content</a>
+
+    
+    
+    
+
+
+
+      
+      <div class="header header-logged-out" role="banner">
+  <div class="container clearfix">
+
+    <a class="header-logo-wordmark" href="https://github.com/" data-ga-click="(Logged out) Header, go to homepage, icon:logo-wordmark">
+      <span class="mega-octicon octicon-logo-github"></span>
+    </a>
+
+    <div class="header-actions" role="navigation">
+        <a class="btn btn-primary" href="/join" data-ga-click="(Logged out) Header, clicked Sign up, text:sign-up">Sign up</a>
+      <a class="btn" href="/login?return_to=%2Fantirez%2Fredis%2Fissues%2F85" data-ga-click="(Logged out) Header, clicked Sign in, text:sign-in">Sign in</a>
+    </div>
+
+    <div class="site-search repo-scope js-site-search" role="search">
+      <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/antirez/redis/search" class="js-site-search-form" data-global-search-url="/search" data-repo-search-url="/antirez/redis/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+  <label class="js-chromeless-input-container form-control">
+    <div class="scope-badge">This repository</div>
+    <input type="text"
+      class="js-site-search-focus js-site-search-field is-clearable chromeless-input"
+      data-hotkey="s"
+      name="q"
+      placeholder="Search"
+      aria-label="Search this repository"
+      data-global-scope-placeholder="Search GitHub"
+      data-repo-scope-placeholder="Search"
+      tabindex="1"
+      autocapitalize="off">
+  </label>
+</form>
+    </div>
+
+      <ul class="header-nav left" role="navigation">
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="/explore" data-ga-click="(Logged out) Header, go to explore, text:explore">Explore</a>
+          </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="/features" data-ga-click="(Logged out) Header, go to features, text:features">Features</a>
+          </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="https://enterprise.github.com/" data-ga-click="(Logged out) Header, go to enterprise, text:enterprise">Enterprise</a>
+          </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="/pricing" data-ga-click="(Logged out) Header, go to pricing, text:pricing">Pricing</a>
+          </li>
+      </ul>
+
+  </div>
+</div>
+
+
+
+    <div id="start-of-content" class="accessibility-aid"></div>
+
+      <div id="js-flash-container">
+</div>
+
+
+    <div role="main" class="main-content">
+        <div itemscope itemtype="http://schema.org/WebPage">
+    <div id="js-repo-pjax-container" class="context-loader-container js-repo-nav-next" data-pjax-container>
+      
+<div class="pagehead repohead instapaper_ignore readability-menu experiment-repo-nav">
+  <div class="container repohead-details-container">
+
+    
+
+<ul class="pagehead-actions">
+
+  <li>
+      <a href="/login?return_to=%2Fantirez%2Fredis"
+    class="btn btn-sm btn-with-count tooltipped tooltipped-n"
+    aria-label="You must be signed in to watch a repository" rel="nofollow">
+    <span class="octicon octicon-eye"></span>
+    Watch
+  </a>
+  <a class="social-count" href="/antirez/redis/watchers">
+    1,658
+  </a>
+
+  </li>
+
+  <li>
+      <a href="/login?return_to=%2Fantirez%2Fredis"
+    class="btn btn-sm btn-with-count tooltipped tooltipped-n"
+    aria-label="You must be signed in to star a repository" rel="nofollow">
+    <span class="octicon octicon-star "></span>
+    Star
+  </a>
+
+    <a class="social-count js-social-count" href="/antirez/redis/stargazers">
+      16,150
+    </a>
+
+  </li>
+
+  <li>
+      <a href="/login?return_to=%2Fantirez%2Fredis"
+        class="btn btn-sm btn-with-count tooltipped tooltipped-n"
+        aria-label="You must be signed in to fork a repository" rel="nofollow">
+        <span class="octicon octicon-repo-forked "></span>
+        Fork
+      </a>
+
+    <a href="/antirez/redis/network" class="social-count">
+      5,579
+    </a>
+  </li>
+</ul>
+
+    <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public ">
+  <span class="octicon octicon-repo "></span>
+  <span class="author"><a href="/antirez" class="url fn" itemprop="url" rel="author"><span itemprop="title">antirez</span></a></span><!--
+--><span class="path-divider">/</span><!--
+--><strong><a href="/antirez/redis" data-pjax="#js-repo-pjax-container">redis</a></strong>
+
+  <span class="page-context-loader">
+    <img alt="" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+  </span>
+
+</h1>
+
+  </div>
+  <div class="container">
+    
+<nav class="reponav js-repo-nav js-sidenav-container-pjax js-octicon-loaders"
+     role="navigation"
+     data-pjax="#js-repo-pjax-container">
+
+  <a href="/antirez/redis" aria-label="Code" class="js-selected-navigation-item reponav-item" data-hotkey="g c" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches /antirez/redis">
+    <span class="octicon octicon-code "></span>
+    Code
+</a>
+    <a href="/antirez/redis/issues" aria-selected="true" class="js-selected-navigation-item selected reponav-item" data-hotkey="g i" data-selected-links="repo_issues repo_labels repo_milestones /antirez/redis/issues">
+      <span class="octicon octicon-issue-opened "></span>
+      Issues
+      <span class="counter">606</span>
+</a>
+  <a href="/antirez/redis/pulls" class="js-selected-navigation-item reponav-item" data-hotkey="g p" data-selected-links="repo_pulls /antirez/redis/pulls">
+    <span class="octicon octicon-git-pull-request "></span>
+    Pull requests
+    <span class="counter">359</span>
+</a>
+
+  <a href="/antirez/redis/pulse" class="js-selected-navigation-item reponav-item" data-selected-links="pulse /antirez/redis/pulse">
+    <span class="octicon octicon-pulse "></span>
+    Pulse
+</a>
+  <a href="/antirez/redis/graphs" class="js-selected-navigation-item reponav-item" data-selected-links="repo_graphs repo_contributors /antirez/redis/graphs">
+    <span class="octicon octicon-graph "></span>
+    Graphs
+</a>
+
+</nav>
+
+  </div>
+</div>
+
+<div class="container new-discussion-timeline experiment-repo-nav">
+  <div class="repository-content">
+
+    
+<style type="text/css" media="screen">
+  span.labelstyle-49311C, .linked-labelstyle-49311C {  background-color: #49311C !important;  color: #fff !important;}.labelstyle-49311C.selected {  background-color: #49311C !important;  color: #fff !important;}.label-select-menu .labelstyle-49311C.selected {  background:rgba(73, 49, 28, 0.12) !important;  color: #99663a !important;}
+
+span.labelstyle-aa0000, .linked-labelstyle-aa0000 {  background-color: #aa0000 !important;  color: #fff !important;}.labelstyle-aa0000.selected {  background-color: #aa0000 !important;  color: #fff !important;}.label-select-menu .labelstyle-aa0000.selected {  background:rgba(170, 0, 0, 0.12) !important;  color: #990000 !important;}
+
+span.labelstyle-fbca04, .linked-labelstyle-fbca04 {  background-color: #fbca04 !important;  color: #332900 !important;}.labelstyle-fbca04.selected {  background-color: #fbca04 !important;  color: #332900 !important;}.label-select-menu .labelstyle-fbca04.selected {  background:rgba(251, 202, 4, 0.12) !important;  color: #997b02 !important;}
+
+span.labelstyle-009800, .linked-labelstyle-009800 {  background-color: #009800 !important;  color: #fff !important;}.labelstyle-009800.selected {  background-color: #009800 !important;  color: #fff !important;}.label-select-menu .labelstyle-009800.selected {  background:rgba(0, 152, 0, 0.12) !important;  color: #009900 !important;}
+
+span.labelstyle-e10c02, .linked-labelstyle-e10c02 {  background-color: #e10c02 !important;  color: #fff !important;}.labelstyle-e10c02.selected {  background-color: #e10c02 !important;  color: #fff !important;}.label-select-menu .labelstyle-e10c02.selected {  background:rgba(225, 12, 2, 0.12) !important;  color: #990801 !important;}
+
+span.labelstyle-444444, .linked-labelstyle-444444 {  background-color: #444444 !important;  color: #fff !important;}.labelstyle-444444.selected {  background-color: #444444 !important;  color: #fff !important;}.label-select-menu .labelstyle-444444.selected {  background:rgba(68, 68, 68, 0.12) !important;  color: #999999 !important;}
+
+span.labelstyle-bfe5bf, .linked-labelstyle-bfe5bf {  background-color: #bfe5bf !important;  color: #2a332a !important;}.labelstyle-bfe5bf.selected {  background-color: #bfe5bf !important;  color: #2a332a !important;}.label-select-menu .labelstyle-bfe5bf.selected {  background:rgba(191, 229, 191, 0.12) !important;  color: #7f997f !important;}
+
+span.labelstyle-d7e102, .linked-labelstyle-d7e102 {  background-color: #d7e102 !important;  color: #303300 !important;}.labelstyle-d7e102.selected {  background-color: #d7e102 !important;  color: #303300 !important;}.label-select-menu .labelstyle-d7e102.selected {  background:rgba(215, 225, 2, 0.12) !important;  color: #929901 !important;}
+
+span.labelstyle-000000, .linked-labelstyle-000000 {  background-color: #000000 !important;  color: #fff !important;}.labelstyle-000000.selected {  background-color: #000000 !important;  color: #fff !important;}.label-select-menu .labelstyle-000000.selected {  background:rgba(247, 247, 247, 1.0) !important;  color: #666666 !important;}
+
+span.labelstyle-daf284, .linked-labelstyle-daf284 {  background-color: #daf284 !important;  color: #2d331b !important;}.labelstyle-daf284.selected {  background-color: #daf284 !important;  color: #2d331b !important;}.label-select-menu .labelstyle-daf284.selected {  background:rgba(218, 242, 132, 0.12) !important;  color: #899953 !important;}
+
+span.labelstyle-d4c5f9, .linked-labelstyle-d4c5f9 {  background-color: #d4c5f9 !important;  color: #2b2833 !important;}.labelstyle-d4c5f9.selected {  background-color: #d4c5f9 !important;  color: #2b2833 !important;}.label-select-menu .labelstyle-d4c5f9.selected {  background:rgba(212, 197, 249, 0.12) !important;  color: #827999 !important;}
+
+span.labelstyle-aaaaaa, .linked-labelstyle-aaaaaa {  background-color: #aaaaaa !important;  color: #333333 !important;}.labelstyle-aaaaaa.selected {  background-color: #aaaaaa !important;  color: #333333 !important;}.label-select-menu .labelstyle-aaaaaa.selected {  background:rgba(170, 170, 170, 0.12) !important;  color: #999999 !important;}
+
+span.labelstyle-207de5, .linked-labelstyle-207de5 {  background-color: #207de5 !important;  color: #fff !important;}.labelstyle-207de5.selected {  background-color: #207de5 !important;  color: #fff !important;}.label-select-menu .labelstyle-207de5.selected {  background:rgba(32, 125, 229, 0.12) !important;  color: #155399 !important;}
+
+span.labelstyle-e102d8, .linked-labelstyle-e102d8 {  background-color: #e102d8 !important;  color: #fff !important;}.labelstyle-e102d8.selected {  background-color: #e102d8 !important;  color: #fff !important;}.label-select-menu .labelstyle-e102d8.selected {  background:rgba(225, 2, 216, 0.12) !important;  color: #990192 !important;}
+
+span.labelstyle-eb6420, .linked-labelstyle-eb6420 {  background-color: #eb6420 !important;  color: #fff !important;}.labelstyle-eb6420.selected {  background-color: #eb6420 !important;  color: #fff !important;}.label-select-menu .labelstyle-eb6420.selected {  background:rgba(235, 100, 32, 0.12) !important;  color: #994114 !important;}
+
+span.labelstyle-bfd4f2, .linked-labelstyle-bfd4f2 {  background-color: #bfd4f2 !important;  color: #282c33 !important;}.labelstyle-bfd4f2.selected {  background-color: #bfd4f2 !important;  color: #282c33 !important;}.label-select-menu .labelstyle-bfd4f2.selected {  background:rgba(191, 212, 242, 0.12) !important;  color: #788699 !important;}
+
+span.labelstyle-f172e8, .linked-labelstyle-f172e8 {  background-color: #f172e8 !important;  color: #331831 !important;}.labelstyle-f172e8.selected {  background-color: #f172e8 !important;  color: #331831 !important;}.label-select-menu .labelstyle-f172e8.selected {  background:rgba(241, 114, 232, 0.12) !important;  color: #994893 !important;}
+
+span.labelstyle-006b75, .linked-labelstyle-006b75 {  background-color: #006b75 !important;  color: #fff !important;}.labelstyle-006b75.selected {  background-color: #006b75 !important;  color: #fff !important;}.label-select-menu .labelstyle-006b75.selected {  background:rgba(0, 107, 117, 0.12) !important;  color: #008b99 !important;}
+
+span.labelstyle-5319e7, .linked-labelstyle-5319e7 {  background-color: #5319e7 !important;  color: #fff !important;}.labelstyle-5319e7.selected {  background-color: #5319e7 !important;  color: #fff !important;}.label-select-menu .labelstyle-5319e7.selected {  background:rgba(83, 25, 231, 0.12) !important;  color: #361099 !important;}
+
+span.labelstyle-02d7e1, .linked-labelstyle-02d7e1 {  background-color: #02d7e1 !important;  color: #003033 !important;}.labelstyle-02d7e1.selected {  background-color: #02d7e1 !important;  color: #003033 !important;}.label-select-menu .labelstyle-02d7e1.selected {  background:rgba(2, 215, 225, 0.12) !important;  color: #019299 !important;}
+
+span.labelstyle-0b02e1, .linked-labelstyle-0b02e1 {  background-color: #0b02e1 !important;  color: #fff !important;}.labelstyle-0b02e1.selected {  background-color: #0b02e1 !important;  color: #fff !important;}.label-select-menu .labelstyle-0b02e1.selected {  background:rgba(11, 2, 225, 0.30720418300653585) !important;  color: #040066 !important;}
+</style>
+
+<div class="issues-listing" data-pjax>
+  <div class="context-loader large-format-loader">
+  <p><img alt="" height="64" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-128.gif" width="64" /></p>
+  <p>Loading…</p>
+</div>
+
+    <div id="show_issue" class="js-issues-results">
+
+    
+  <div
+    id="partial-discussion-header"
+    class="gh-header js-details-container js-socket-channel js-updatable-content issue"
+    data-channel="antirez/redis:issue:1686248"
+    data-url="/antirez/redis/issues/85/show_partial?partial=issues%2Ftitle">
+
+  <div class="gh-header-show ">
+      <div class="gh-header-actions">
+          <a href="/antirez/redis/issues/new" class="btn btn-sm btn-primary right" data-hotkey="c">
+            New issue
+          </a>
+      </div>
+
+    <h1 class="gh-header-title">
+      <span class="js-issue-title">configurable umask for unix socket</span>
+      <span class="gh-header-number">#85</span>
+    </h1>
+  </div>
+
+
+  <div class="flex-table gh-header-meta">
+    <div class="flex-table-item">
+        <div class="state state-closed">
+          <span class="octicon octicon-issue-closed "></span>
+          Closed
+        </div>
+    </div>
+    <div class="flex-table-item flex-table-item-primary">
+        <a href="/pietern" class="author">pietern</a> opened this <span class="noun">Issue</span> <time datetime="2011-09-20T09:27:45Z" is="relative-time">Sep 20, 2011</time>
+        &middot; 2 comments
+    </div>
+  </div>
+</div>
+
+
+    <div id="discussion_bucket" class="tab-content clearfix">
+      <div id="partial-discussion-sidebar"
+     class="discussion-sidebar js-socket-channel js-updatable-content"
+     data-channel="antirez/redis:issue:1686248"
+     data-url="/antirez/redis/issues/85/show_partial?partial=issues%2Fsidebar">
+  
+  <div class="discussion-sidebar-item sidebar-labels js-discussion-sidebar-item">
+  <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/antirez/redis/issues/85?partial=issues%2Fsidebar%2Fshow%2Flabels" class="js-issue-sidebar-form" data-form-nonce="02b711ee74b36e40fcde1a01abcabb41e806c6a0" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="put" /><input name="authenticity_token" type="hidden" value="hABr59SZtDuaIaRoJS2CNwBx1H2Oh9M0ELbSWYjikVkxeYaf9uMCxkQjF+24OQRHZ0rg4SXCzAsfXD5YjrixEw==" /></div>
+      
+  <h3 class="discussion-sidebar-heading">
+    Labels
+  </h3>
+
+
+    <div class="labels css-truncate">
+      <a href="/antirez/redis/labels/non%20critical%20bug" class="label css-truncate-target linked-labelstyle-d7e102" title="non critical bug">non critical bug</a>
+
+</div>
+
+</form></div>
+
+  <div class="discussion-sidebar-item sidebar-milestone js-discussion-sidebar-item">
+  <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/antirez/redis/issues/85/set_milestone?partial=issues%2Fsidebar%2Fshow%2Fmilestone" class="js-issue-sidebar-form" data-form-nonce="02b711ee74b36e40fcde1a01abcabb41e806c6a0" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="put" /><input name="authenticity_token" type="hidden" value="xbPgE+nqQjUvdXF6/SfyVyn5Xco0PRowT1yM6OhTC+ckGRZh2BQTRYOHxeRfS4NNR5/NYw7R5iM1ZAddA77oyQ==" /></div>
+    
+  <h3 class="discussion-sidebar-heading">
+    Milestone
+  </h3>
+
+
+      No milestone
+
+</form></div>
+
+  <div class="discussion-sidebar-item sidebar-assignee js-discussion-sidebar-item">
+  <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/antirez/redis/issues/85?partial=issues%2Fsidebar%2Fshow%2Fassignee" class="js-issue-sidebar-form" data-form-nonce="02b711ee74b36e40fcde1a01abcabb41e806c6a0" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="put" /><input name="authenticity_token" type="hidden" value="MaFRsOJXFzaSUDFti8D88tkKPTkyb2YajKEB6py/YrRFht4nRQTS1OJ4/303kmM8PohY/cqBQamnZKXQ4cBKqQ==" /></div>
+    
+  <h3 class="discussion-sidebar-heading">
+    Assignee
+  </h3>
+
+
+    <span class="css-truncate">
+      No one assigned
+</span>
+
+</form></div>
+
+  
+  <div id="partial-users-participants" class="discussion-sidebar-item">
+  <div class="participation">
+
+    <h3 class="discussion-sidebar-heading">
+      3 participants
+    </h3>
+    <div class="participation-avatars">
+        <a class="participant-avatar tooltipped tooltipped-s" aria-label="pietern" href="/pietern"><img alt="@pietern" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/9845?v=3&amp;s=40" width="20" /> </a>
+        <a class="participant-avatar tooltipped tooltipped-s" aria-label="antirez" href="/antirez"><img alt="@antirez" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/65632?v=3&amp;s=40" width="20" /> </a>
+        <a class="participant-avatar tooltipped tooltipped-s" aria-label="mattsta" href="/mattsta"><img alt="@mattsta" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/15594?v=3&amp;s=40" width="20" /> </a>
+    </div>
+  </div>
+</div>
+
+
+  
+</div>
+
+
+      <div class="discussion-timeline js-quote-selection-container ">
+
+        <div class="js-discussion js-socket-channel" data-channel="antirez/redis:marked-as-read:1686248">
+          
+
+  <div class="timeline-comment-wrapper js-comment-container">
+    <a href="/pietern"><img alt="@pietern" class="timeline-comment-avatar" height="48" src="https://avatars3.githubusercontent.com/u/9845?v=3&amp;s=96" width="48" /></a>
+    <div id="issue-1686248"
+     class="comment previewable-edit timeline-comment js-comment js-task-list-container "
+     data-body-version="82e044965a5abd76b53dde7bd074560d">
+
+  <div class="timeline-comment-header ">
+
+
+
+
+  <div class="timeline-comment-header-text">
+
+    <strong>
+      <a href="/pietern" class="author">pietern</a>
+    </strong>
+
+    commented
+
+    <a href="#issue-1686248" class="timestamp">
+      <time datetime="2011-09-20T09:27:45Z" is="relative-time">Sep 20, 2011</time>
+    </a>
+  </div>
+</div>
+
+
+  <div class="comment-content">
+
+    <div class="edit-comment-hide">
+      <div class="comment-body markdown-body markdown-format js-comment-body">
+          <p>The default umask (usually 022) can be overridden by the process starting Redis (e.g. to 000 to allow any user to connect to Redis over its Unix socket), but this also changes the permission mask for the log, snapshot and AOF. I think it would be good to add a configuration directive to explicitly set the mask for a unix socket, so a permissive unix socket doesn't necessarily impacts the permission settings on the other files Redis creates.</p>
+
+<p>For example:</p>
+
+<pre><code>unixsocket /tmp/redis.sock
+unixsocketperm 755 # As safe default, user can specify 777
+</code></pre>
+
+<p>This integer can be passed directly to <code>chmod(2)</code>.</p>
+
+<p>What do you think?</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+  <div class="timeline-comment-wrapper js-comment-container">
+    <a href="/antirez"><img alt="@antirez" class="timeline-comment-avatar" height="48" src="https://avatars3.githubusercontent.com/u/65632?v=3&amp;s=96" width="48" /></a>
+    <div id="issuecomment-2143758"
+     class="comment previewable-edit timeline-comment js-comment js-task-list-container owner-comment"
+     data-body-version="2a771e50b5615a40cee0929d9315e37c">
+
+  <div class="timeline-comment-header ">
+
+
+    <span class="timeline-comment-label">Owner</span>
+
+
+  <div class="timeline-comment-header-text">
+
+    <strong>
+      <a href="/antirez" class="author">antirez</a>
+    </strong>
+
+    commented
+
+    <a href="#issuecomment-2143758" class="timestamp">
+      <time datetime="2011-09-20T10:23:00Z" is="relative-time">Sep 20, 2011</time>
+    </a>
+  </div>
+</div>
+
+
+  <div class="comment-content">
+
+    <div class="edit-comment-hide">
+      <div class="comment-body markdown-body markdown-format js-comment-body">
+          <p>Makes sense to me, I agree that a specific option is the best pick. As a sole possible alternative I would simply set it to 777 by default if there are no concerns about that.</p>
+
+<p>If we go for the config directive, are you sure we don't need to convert it into an octal number before passing it to chmod? If I remember correctly you pass it as an octal value to chmod as well, like 0777, so if the user writes "777" in the config file we need to operate a conversion.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+  
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-1d85387">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@florean" class="avatar" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" />
+      <a href="/florean" class="author" truncate="true">florean</a>
+
+      referenced
+      this issue
+      from a commit
+      <a href="#ref-commit-1d85387" class="timestamp">
+        <time datetime="2011-10-09T08:25:25Z" is="relative-time">Oct 9, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+>
+
+  <td class="commit-icon">
+      <span class="octicon octicon-x "></span>
+  </td>
+
+
+  <td class="commit-message">
+      <span class="text-muted">Commit has since been removed from the repository and is no longer available.</span>
+  </td>
+
+  <td class="commit-meta">
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-b48dac2">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@florean" class="avatar" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" />
+      <a href="/florean" class="author" truncate="true">florean</a>
+
+      referenced
+      this issue
+      from a commit
+        in florean/redis
+      <a href="#ref-commit-b48dac2" class="timestamp">
+        <time datetime="2011-10-09T09:09:11Z" is="relative-time">Oct 9, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+    data-channel="antirez/redis:commit:b48dac2cbba1d25a4b612de45d7cfde62797ccde"
+    data-url="/antirez/redis/commit/b48dac2cbba1d25a4b612de45d7cfde62797ccde/show_partial?partial=commit%2Fcondensed"
+  >
+
+  <td class="commit-icon">
+      <span class="octicon octicon-git-commit "></span>
+  </td>
+
+    <td class="commit-gravatar">
+      <a href="/florean"><img alt="@florean" class="avatar avatar-small" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" /></a>
+    </td>
+
+    <td class="commit-author">
+      <strong><a href="/florean" class="author" rel="contributor">florean</a></strong>
+    </td>
+
+  <td class="commit-message">
+      <code><a href="/florean/redis/commit/b48dac2cbba1d25a4b612de45d7cfde62797ccde" class="message" data-pjax="true" title="Added a config directive for a Unix socket mask
+
+Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue #85 (
+https://github.com/antirez/redis/issues/85).">Added a config directive for a Unix socket mask</a></code>
+
+        <span class="hidden-text-expander inline">
+          <a href="#" class="js-details-target">&hellip;</a>
+        </span>
+        <div class="commit-desc"><pre class="text-small">Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue <a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a> (
+<a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">antirez#85</a>).</pre></div>
+
+  </td>
+
+  <td class="commit-meta">
+
+
+        <code><a href="/florean/redis/commit/b48dac2cbba1d25a4b612de45d7cfde62797ccde" class="commit-id">b48dac2</a></code>
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-8523876">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@florean" class="avatar" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" />
+      <a href="/florean" class="author" truncate="true">florean</a>
+
+      referenced
+      this issue
+      from a commit
+        in florean/redis
+      <a href="#ref-commit-8523876" class="timestamp">
+        <time datetime="2011-10-10T18:22:15Z" is="relative-time">Oct 10, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+    data-channel="antirez/redis:commit:85238765033e2fa89b1879383421d5a8aafff17f"
+    data-url="/antirez/redis/commit/85238765033e2fa89b1879383421d5a8aafff17f/show_partial?partial=commit%2Fcondensed"
+  >
+
+  <td class="commit-icon">
+      <span class="octicon octicon-git-commit "></span>
+  </td>
+
+    <td class="commit-gravatar">
+      <a href="/florean"><img alt="@florean" class="avatar avatar-small" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" /></a>
+    </td>
+
+    <td class="commit-author">
+      <strong><a href="/florean" class="author" rel="contributor">florean</a></strong>
+    </td>
+
+  <td class="commit-message">
+      <code><a href="/florean/redis/commit/85238765033e2fa89b1879383421d5a8aafff17f" class="message" data-pjax="true" title="Added a config directive for a Unix socket mask
+
+Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue #85 (
+https://github.com/antirez/redis/issues/85).">Added a config directive for a Unix socket mask</a></code>
+
+        <span class="hidden-text-expander inline">
+          <a href="#" class="js-details-target">&hellip;</a>
+        </span>
+        <div class="commit-desc"><pre class="text-small">Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue <a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a> (
+<a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">antirez#85</a>).</pre></div>
+
+  </td>
+
+  <td class="commit-meta">
+
+
+        <code><a href="/florean/redis/commit/85238765033e2fa89b1879383421d5a8aafff17f" class="commit-id">8523876</a></code>
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-f61f253">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@florean" class="avatar" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" />
+      <a href="/florean" class="author" truncate="true">florean</a>
+
+      referenced
+      this issue
+      from a commit
+      <a href="#ref-commit-f61f253" class="timestamp">
+        <time datetime="2011-10-10T18:35:31Z" is="relative-time">Oct 10, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+>
+
+  <td class="commit-icon">
+      <span class="octicon octicon-x "></span>
+  </td>
+
+
+  <td class="commit-message">
+      <span class="text-muted">Commit has since been removed from the repository and is no longer available.</span>
+  </td>
+
+  <td class="commit-meta">
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-09cefcf">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@antirez" class="avatar" height="16" src="https://avatars0.githubusercontent.com/u/65632?v=3&amp;s=32" width="16" />
+      <a href="/antirez" class="author" truncate="true">antirez</a>
+
+      referenced
+      this issue
+      from a commit
+      <a href="#ref-commit-09cefcf" class="timestamp">
+        <time datetime="2011-10-10T20:09:21Z" is="relative-time">Oct 10, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+    data-channel="antirez/redis:commit:09cefcfbb354e56b07ff2b32ea3594046fbddebb"
+    data-url="/antirez/redis/commit/09cefcfbb354e56b07ff2b32ea3594046fbddebb/show_partial?partial=commit%2Fcondensed"
+  >
+
+  <td class="commit-icon">
+      <span class="octicon octicon-git-commit "></span>
+  </td>
+
+    <td class="commit-gravatar">
+      <a href="/florean"><img alt="@florean" class="avatar avatar-small" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" /></a>
+    </td>
+
+    <td class="commit-author">
+      <strong><a href="/florean" class="author" rel="contributor">florean</a></strong>
+    </td>
+
+  <td class="commit-message">
+      <code><a href="/antirez/redis/commit/09cefcfbb354e56b07ff2b32ea3594046fbddebb" class="message" data-pjax="true" title="Added a config directive for a Unix socket mask
+
+Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue #85 (
+https://github.com/antirez/redis/issues/85).">Added a config directive for a Unix socket mask</a></code>
+
+        <span class="hidden-text-expander inline">
+          <a href="#" class="js-details-target">&hellip;</a>
+        </span>
+        <div class="commit-desc"><pre class="text-small">Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue <a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a> (
+<a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a>).</pre></div>
+
+  </td>
+
+  <td class="commit-meta">
+
+
+        <code><a href="/antirez/redis/commit/09cefcfbb354e56b07ff2b32ea3594046fbddebb" class="commit-id">09cefcf</a></code>
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-cc626d9">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@florean" class="avatar" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" />
+      <a href="/florean" class="author" truncate="true">florean</a>
+
+      referenced
+      this issue
+      from a commit
+        in florean/redis
+      <a href="#ref-commit-cc626d9" class="timestamp">
+        <time datetime="2011-10-21T01:31:28Z" is="relative-time">Oct 21, 2011</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+    data-channel="antirez/redis:commit:cc626d9b4978d3cc83c27539f6b9576e09984139"
+    data-url="/antirez/redis/commit/cc626d9b4978d3cc83c27539f6b9576e09984139/show_partial?partial=commit%2Fcondensed"
+  >
+
+  <td class="commit-icon">
+      <span class="octicon octicon-git-commit "></span>
+  </td>
+
+    <td class="commit-gravatar">
+      <a href="/florean"><img alt="@florean" class="avatar avatar-small" height="16" src="https://avatars2.githubusercontent.com/u/22398?v=3&amp;s=32" width="16" /></a>
+    </td>
+
+    <td class="commit-author">
+      <strong><a href="/florean" class="author" rel="contributor">florean</a></strong>
+    </td>
+
+  <td class="commit-message">
+      <code><a href="/florean/redis/commit/cc626d9b4978d3cc83c27539f6b9576e09984139" class="message" data-pjax="true" title="Added a config directive for a Unix socket mask
+
+Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue #85 (
+https://github.com/antirez/redis/issues/85).">Added a config directive for a Unix socket mask</a></code>
+
+        <span class="hidden-text-expander inline">
+          <a href="#" class="js-details-target">&hellip;</a>
+        </span>
+        <div class="commit-desc"><pre class="text-small">Added a configuration directive to allow a user to specify the
+permissions to be granted to the Unix socket file.  I followed
+the format Pieter and Salvatore discusses in issue <a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a> (
+<a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">antirez#85</a>).</pre></div>
+
+  </td>
+
+  <td class="commit-meta">
+
+
+        <code><a href="/florean/redis/commit/cc626d9b4978d3cc83c27539f6b9576e09984139" class="commit-id">cc626d9</a></code>
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+  
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+      This was referenced <time datetime="2014-01-21T12:17:49Z" is="relative-time">Jan 21, 2014</time>
+    </div>
+
+
+      <div class="discussion-item-rollup-ref">
+          <span class="state state-closed right">
+                <span class="octicon octicon-issue-closed "></span>
+            Closed
+          </span>
+
+
+
+        <div class="discussion-item-header" id="ref-issue-25943023">
+          <h3 class="discussion-item-ref-title">
+            <a href="/gitlabhq/gitlabhq/issues/6100" class="title-link">
+              Gitlab doesn&#39;t connect to redis over socket.
+
+              <span class="issue-num">
+                gitlabhq/gitlabhq#6100
+              </span>
+</a>          </h3>
+        </div>
+      </div>
+
+      <div class="discussion-item-rollup-ref">
+          <span class="state state-closed right">
+                <span class="octicon octicon-issue-closed "></span>
+            Closed
+          </span>
+
+
+
+        <div class="discussion-item-header" id="ref-issue-25952214">
+          <h3 class="discussion-item-ref-title">
+            <a href="/gitlabhq/gitlabhq/issues/6101" class="title-link">
+              no Report in logfiles, all Checks Ok, but no sh actions
+
+              <span class="issue-num">
+                gitlabhq/gitlabhq#6101
+              </span>
+</a>          </h3>
+        </div>
+      </div>
+
+  </div>
+
+  <div class="timeline-comment-wrapper js-comment-container">
+    <a href="/mattsta"><img alt="@mattsta" class="timeline-comment-avatar" height="48" src="https://avatars0.githubusercontent.com/u/15594?v=3&amp;s=96" width="48" /></a>
+    <div id="issuecomment-50371085"
+     class="comment previewable-edit timeline-comment js-comment js-task-list-container "
+     data-body-version="02e845fb9e1405728e691a5b56b88b65">
+
+  <div class="timeline-comment-header ">
+
+
+
+
+  <div class="timeline-comment-header-text">
+
+    <strong>
+      <a href="/mattsta" class="author">mattsta</a>
+    </strong>
+
+    commented
+
+    <a href="#issuecomment-50371085" class="timestamp">
+      <time datetime="2014-07-28T17:36:30Z" is="relative-time">Jul 28, 2014</time>
+    </a>
+  </div>
+</div>
+
+
+  <div class="comment-content">
+
+    <div class="edit-comment-hide">
+      <div class="comment-body markdown-body markdown-format js-comment-body">
+          <p>Added in <a href="https://github.com/antirez/redis/commit/85238765033e2fa89b1879383421d5a8aafff17f" class="commit-link"><tt>8523876</tt></a> (October 2011)</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+  
+
+
+      
+
+
+  <div class="discussion-item discussion-item-closed">
+    <div class="discussion-item-header" id="event-146349535">
+
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-circle-slash "></span>
+      </span>
+      <img alt="@mattsta" class="avatar" height="16" src="https://avatars3.githubusercontent.com/u/15594?v=3&amp;s=32" width="16" />
+      <a href="/mattsta" class="author">mattsta</a>
+      closed this   <a href="https://github.com/antirez/redis/issues/85#event-146349535" class="timestamp"><time class="timestamp" datetime="2014-07-28T17:36:30Z" is="relative-time">Jul 28, 2014</time></a>
+    </div>
+  </div>
+
+  <div class="closed-banner"></div>
+
+
+
+
+      
+  <div class="discussion-item discussion-item-ref">
+    <div class="discussion-item-header" id="ref-commit-3ae756f">
+      <span class="discussion-item-icon">
+        <span class="octicon octicon-bookmark "></span>
+      </span>
+
+      <img alt="@JackieXie168" class="avatar" height="16" src="https://avatars1.githubusercontent.com/u/8347113?v=3&amp;s=32" width="16" />
+      <a href="/JackieXie168" class="author" truncate="true">JackieXie168</a>
+
+      referenced
+      this issue
+      from a commit
+      <a href="#ref-commit-3ae756f" class="timestamp">
+        <time datetime="2014-09-16T03:10:58Z" is="relative-time">Sep 16, 2014</time>
+      </a>
+    </div>
+
+    <table class="timeline-commits">
+      
+
+<tr class="commit js-details-container js-socket-channel js-updatable-content"
+    data-channel="antirez/redis:commit:3ae756f255809f38b237e5f925b6d24b2d34460a"
+    data-url="/antirez/redis/commit/3ae756f255809f38b237e5f925b6d24b2d34460a/show_partial?partial=commit%2Fcondensed"
+  >
+
+  <td class="commit-icon">
+      <span class="octicon octicon-git-commit "></span>
+  </td>
+
+    <td class="commit-gravatar">
+      <img alt="" class="avatar avatar-small" height="16" src="https://2.gravatar.com/avatar/080c066d3b20aa81a1a826de56e6713d?d=https%3A%2F%2Fassets-cdn.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&amp;r=x&amp;s=140" width="16" />
+    </td>
+
+    <td class="commit-author">
+      <strong><span class="author">Daniel Ehrenberg</span></strong>
+    </td>
+
+  <td class="commit-message">
+      <code><a href="/antirez/redis/commit/3ae756f255809f38b237e5f925b6d24b2d34460a" class="message" data-pjax="true" title="Fixing Linux I/O permissions
+CLoses #85.">Fixing Linux I/O permissions</a></code>
+
+        <span class="hidden-text-expander inline">
+          <a href="#" class="js-details-target">&hellip;</a>
+        </span>
+        <div class="commit-desc"><pre class="text-small">CLoses <a href="https://github.com/antirez/redis/issues/85" class="issue-link js-issue-link" data-url="https://github.com/antirez/redis/issues/85" data-id="1686248" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#85</a>.</pre></div>
+
+  </td>
+
+  <td class="commit-meta">
+
+
+        <code><a href="/antirez/redis/commit/3ae756f255809f38b237e5f925b6d24b2d34460a" class="commit-id">3ae756f</a></code>
+  </td>
+</tr>
+
+    </table>
+  </div>
+
+
+
+
+
+<!-- Rendered timeline since 2014-09-15 20:10:58 -->
+<div id="partial-timeline-marker"
+      class="js-timeline-marker js-socket-channel js-updatable-content"
+      data-channel="antirez/redis:issue:1686248"
+      data-url="/antirez/redis/issues/85/show_partial?partial=issues%2Ftimeline_marker&amp;since=1410837058"
+      data-last-modified="Tue, 16 Sep 2014 03:10:58 GMT">
+
+    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/antirez/redis/notifications/mark?ids=38174072" class="hidden js-timeline-marker-form" data-form-nonce="02b711ee74b36e40fcde1a01abcabb41e806c6a0" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="MUN4bXVooQ+1wdKD/gokL5F1hvRVQX551SKS491SFYGhaJDnBvzsXdNYeHxJO1Q5APX9Dobets/K6uHA+RbNfw==" /></div>
+</form></div>
+
+
+        </div>
+
+          <div class="discussion-timeline-actions">
+                <div class="signed-out-comment">
+	<a href="/join" class="btn btn-primary" rel="nofollow">Sign up for free</a>
+	<strong>to join this conversation on GitHub</strong>.
+	Already have an account?
+	<a href="/login?return_to=https%3A%2F%2Fgithub.com%2Fantirez%2Fredis%2Fissues%2F85" rel="nofollow">Sign in to comment</a>
+</div>
+
+
+          </div>
+      </div>
+
+    </div>
+    <div class="clear"></div>
+  </div>
+
+</div>
+
+
+  </div>
+  <div class="modal-backdrop"></div>
+</div>
+
+    </div>
+  </div>
+
+    </div>
+
+        <div class="container">
+  <div class="site-footer" role="contentinfo">
+    <ul class="site-footer-links right">
+        <li><a href="https://status.github.com/" data-ga-click="Footer, go to status, text:status">Status</a></li>
+      <li><a href="https://developer.github.com" data-ga-click="Footer, go to api, text:api">API</a></li>
+      <li><a href="https://training.github.com" data-ga-click="Footer, go to training, text:training">Training</a></li>
+      <li><a href="https://shop.github.com" data-ga-click="Footer, go to shop, text:shop">Shop</a></li>
+        <li><a href="https://github.com/blog" data-ga-click="Footer, go to blog, text:blog">Blog</a></li>
+        <li><a href="https://github.com/about" data-ga-click="Footer, go to about, text:about">About</a></li>
+        <li><a href="https://github.com/pricing" data-ga-click="Footer, go to pricing, text:pricing">Pricing</a></li>
+
+    </ul>
+
+    <a href="https://github.com" aria-label="Homepage">
+      <span class="mega-octicon octicon-mark-github " title="GitHub "></span>
+</a>
+    <ul class="site-footer-links">
+      <li>&copy; 2016 <span title="0.23436s from github-fe126-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="https://github.com/site/terms" data-ga-click="Footer, go to terms, text:terms">Terms</a></li>
+        <li><a href="https://github.com/site/privacy" data-ga-click="Footer, go to privacy, text:privacy">Privacy</a></li>
+        <li><a href="https://github.com/security" data-ga-click="Footer, go to security, text:security">Security</a></li>
+        <li><a href="https://github.com/contact" data-ga-click="Footer, go to contact, text:contact">Contact</a></li>
+        <li><a href="https://help.github.com" data-ga-click="Footer, go to help, text:help">Help</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+    
+    
+    
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="octicon octicon-alert"></span>
+      <button type="button" class="flash-close js-flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
+        <span class="octicon octicon-x"></span>
+      </button>
+      Something went wrong with that request. Please try again.
+    </div>
+
+
+      <script crossorigin="anonymous" src="https://assets-cdn.github.com/assets/frameworks-ef8eb4a89ee9f3c8b7613307fe589a8f5705817f7cee27bec51ce5e963234abf.js"></script>
+      <script async="async" crossorigin="anonymous" src="https://assets-cdn.github.com/assets/github-4b6b8e7d11ebb7bce85126d3b4130c80041f2ae6d5d6ef8901a8c0c3f7cb80d2.js"></script>
+      
+      
+      
+    <div class="js-stale-session-flash stale-session-flash flash flash-warn flash-banner hidden">
+      <span class="octicon octicon-alert"></span>
+      <span class="signed-in-tab-flash">You signed in with another tab or window. <a href="">Reload</a> to refresh your session.</span>
+      <span class="signed-out-tab-flash">You signed out in another tab or window. <a href="">Reload</a> to refresh your session.</span>
+    </div>
+  </body>
+</html>
+

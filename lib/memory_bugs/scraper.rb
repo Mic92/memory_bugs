@@ -22,7 +22,24 @@ module MemoryBugs
     def process_tickets
       k = MemoryBugs::Models::TicketPage
       updates = []
-      MemoryBugs::Elasticsearch.scroll(k) do |page|
+
+      search = {
+        body: {
+          query: {
+            function_score: {
+              filter: { and: [
+                { exists: { field: "content" } },
+                { or: [
+                  { term: { scraped: false } },
+                  { not: { exists: { field: "scraped" } } },
+                ]}
+              ]}
+            }
+          }
+        }
+      }
+      MemoryBugs::Elasticsearch.scroll(k, search: search) do |page|
+        MemoryBugs::Logger.info("scrape #{page.url}")
         scraper = @scrapers[page.site]
         if scraper.nil?
           MemoryBugs::Logger.warn("no scraper found for #{page.site}")
@@ -34,6 +51,9 @@ module MemoryBugs
           ticket.site = page.site
         end
         updates.concat(tickets)
+        new_page = Models::TicketPage.new(url: page.url, scraped: true)
+        updates.push(new_page)
+
         if updates.size > 1000
           MemoryBugs::Elasticsearch.bulk(updates)
           updates.clear

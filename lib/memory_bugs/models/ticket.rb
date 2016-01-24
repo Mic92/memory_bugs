@@ -4,6 +4,8 @@ require 'hashie'
 module MemoryBugs
   module Models
     class Ticket < Hashie::Mash
+      include Hashie::Extensions::Coercion
+
       def id
         Digest::SHA256.hexdigest(url)[0..30]
       end
@@ -11,6 +13,18 @@ module MemoryBugs
       def self.type_name
         :ticket
       end
+
+      date_field = ->(v) do
+        case v
+        when String
+          Time.parse(v)
+        else
+          v
+        end
+      end
+
+      coerce_key :created_at, date_field
+      coerce_key :updated_at, date_field
 
       def self.mapping
         string = { type: 'string', index: 'not_analyzed' }
@@ -20,7 +34,6 @@ module MemoryBugs
         {
           type_name => {
             properties: {
-              _all: { enabled: false },
               created_at:  date,
               updated_at:  date,
               title:       text,

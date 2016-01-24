@@ -4,13 +4,14 @@ module MemoryBugs
       def assign_field(ticket, label, value)
         case label
         when /bug\S#(\d+)/
+          ticket.title = value.strip
           ticket.external_id = $1
         when /submitted/
-          ticket.created_at = Time.parse(value)
+          ticket.created_at = value
         when /modified/
-          ticket.updated_at = Time.parse(value)
+          ticket.updated_at = value
         when /status/
-          ticket.status = value.downcase
+          ticket.status = Helpers::clean_text(value.downcase)
         when /category/
           ticket.subsystem = value
         when /^version/
@@ -37,5 +38,6 @@ module MemoryBugs
         [ticket]
       end
     end
+    MemoryBugs::Scraper.register(Mysql)
   end
 end

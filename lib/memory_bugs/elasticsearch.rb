@@ -58,6 +58,16 @@ module MemoryBugs
         Client.indices.refresh
       end
 
+      def serialize(obj)
+        hash = obj.to_h
+        hash.each do |k,v|
+          if v.is_a?(Time)
+            hash[k] = v.iso8601
+          end
+        end
+        hash
+      end
+
       def bulk(objects)
         updates = objects.map do |object|
           {
@@ -66,13 +76,15 @@ module MemoryBugs
               _type:  object.class.type_name,
               _id: object.id,
               data: {
-                doc: object,
+                doc: serialize(object),
                 doc_as_upsert: true
               }
             }
           }
         end
-        Client.bulk(body: updates)
+        res = Client.bulk(body: updates)
+        raise "bulk exited with errors" if res["errors"] == true
+        res
       end
 
       def scroll(klass, search: {})
@@ -87,7 +99,7 @@ module MemoryBugs
 
         loop do
           response = Client.scroll(scroll_id: response['_scroll_id'],
-                                   scroll: '1m')
+                                   scroll: '100m')
           hits = response['hits']['hits']
           break if hits.empty?
 

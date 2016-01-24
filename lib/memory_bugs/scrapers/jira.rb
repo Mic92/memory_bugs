@@ -12,7 +12,7 @@ module MemoryBugs
         when /affects version/
           ticket.version = Helpers::clean_text(value)
         when /status/
-          ticket.status = value.downcase
+          ticket.status = Helpers::clean_text(value.downcase)
         when /resolution/
           ticket.resolution = value.downcase
         when /reproduce/
@@ -25,10 +25,11 @@ module MemoryBugs
         issue = doc.css(".issue-body-content")
         details = issue.css("#details-module .item")
         ticket = MemoryBugs::Models::Ticket.new
+        ticket.title = Helpers.clean_text(doc.css("#summary-val").text)
         details.each do |detail|
           parse_detail(ticket, detail)
         end
-        desc = issue.css(".description-val .user-content-block").text
+        desc = issue.css("#descriptionmodule .user-content-block").text
         if ticket.description.nil?
           ticket.description = Helpers.clean_text(desc)
         else

@@ -5,7 +5,7 @@ module MemoryBugs
         doc = Nokogiri::HTML(content)
         issue = doc.css("#show_issue")
         title = Helpers::clean_text(issue.css(".js-issue-title").text)
-        state = issue.css(".state").text.downcase
+        state = issue.css(".state:last-child").text.downcase
         id = issue.css(".gh-header-number").text
         comments = []
         first_comment = nil
@@ -27,7 +27,7 @@ module MemoryBugs
         ticket.created_at = Time.parse(created_at)
         ticket.updated_at = Time.parse(updated_at)
         ticket.external_id = id
-        ticket.status = state
+        ticket.status = Helpers::clean_text(state)
         ticket.comments = comments.join("\n")
 
         [ticket]

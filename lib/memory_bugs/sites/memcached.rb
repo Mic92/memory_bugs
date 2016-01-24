@@ -16,6 +16,8 @@ module MemoryBugs
           ticket_urls.push(ticket_url(row["ID"]))
         end
       end
+
+      MemoryBugs::Crawler.register(Memcached)
     end
   end
 end
