@@ -4,6 +4,7 @@ gem "nokogiri"
 gem "elasticsearch"
 gem "typhoeus"
 gem "hashie"
+gem "rake"
 
 group :test do
   gem "vcr"
